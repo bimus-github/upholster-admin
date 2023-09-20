@@ -1,13 +1,15 @@
 import React from "react";
-import About from "./pages/About";
-import Navbar from "./components/Navbar";
+
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+import { Navbar } from "./components";
 
 function App() {
   return (
     <div className="App">
       <Navbar />
       <main id="main" className="pl-[60px] pt-[70px] z-0">
-        <About />
+        <RouterProvider router={router} />
       </main>
     </div>
   );
