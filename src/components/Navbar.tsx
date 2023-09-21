@@ -7,8 +7,10 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import { Outlet, useLocation } from "react-router-dom";
 
 function Navbar() {
+  const location = useLocation();
   const [isClosedSideBar, setIsClosedSideBar] = useState<boolean>(true);
 
   return (
@@ -35,13 +37,21 @@ function Navbar() {
         </button>
         <div className="w-full h-[1px] bg-black" />
         <ul className={styles.ul}>
-          <a href="/" className={styles.link}>
+          <a
+            href="/"
+            className={`${styles.link} ${location.pathname === "/" &&
+              "text-sky-500"}`}
+          >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HAQIMIZDA
             </p>
             {isClosedSideBar && <ImportContactsIcon className="absolute" />}
           </a>
-          <a href="/services" className={styles.link}>
+          <a
+            href="/services"
+            className={`${styles.link} ${location.pathname === "/services" &&
+              "text-sky-500"}`}
+          >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HIZMATLAR
             </p>
@@ -49,7 +59,11 @@ function Navbar() {
               <MiscellaneousServicesIcon className="absolute" />
             )}
           </a>
-          <a href="/designs" className={styles.link}>
+          <a
+            href="/designs"
+            className={`${styles.link} ${location.pathname === "/designs" &&
+              "text-sky-500"}`}
+          >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               DIZAYNLAR
             </p>
@@ -57,6 +71,10 @@ function Navbar() {
           </a>
         </ul>
       </aside>
+
+      <main id="main" className="pl-[60px] pt-[70px] z-0">
+        <Outlet />
+      </main>
     </nav>
   );
 }
