@@ -35,13 +35,13 @@ function Navbar() {
         </button>
         <div className="w-full h-[1px] bg-black" />
         <ul className={styles.ul}>
-          <a href="" className={styles.link}>
+          <a href="/" className={styles.link}>
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HAQIMIZDA
             </p>
             {isClosedSideBar && <ImportContactsIcon className="absolute" />}
           </a>
-          <a href="" className={styles.link}>
+          <a href="/services" className={styles.link}>
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HIZMATLAR
             </p>
@@ -49,7 +49,7 @@ function Navbar() {
               <MiscellaneousServicesIcon className="absolute" />
             )}
           </a>
-          <a href="" className={styles.link}>
+          <a href="/designs" className={styles.link}>
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               DIZAYNLAR
             </p>

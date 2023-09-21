@@ -1,3 +1,4 @@
 import Navbar from "./Navbar";
+import Dialog from "./Dialog";
 
-export { Navbar };
+export { Dialog, Navbar };
