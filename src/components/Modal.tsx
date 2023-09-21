@@ -1,36 +1,34 @@
 import React from "react";
 
-interface DialogProps {
-  isOpenDialog: boolean;
-  setIsOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
+interface ModalProps {
+  isOpenModal: boolean;
+  setIsOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   handleYes?: () => void;
 }
 
-function Dialog(props: DialogProps) {
-  const { isOpenDialog, setIsOpenDialog, children, handleYes } = props;
-
+function Modal(props: ModalProps) {
+  const { isOpenModal, setIsOpenModal, children, handleYes } = props;
   return (
     <dialog
       id="dialog"
-      className={`${styles.dialog} ${isOpenDialog ? "flex" : "hidden"}`}
+      className={`${styles.dialog} ${isOpenModal ? "flex" : "hidden"}`}
     >
       <main className={styles.main}>
-        <h1 className={styles.h1}>Are you sure?</h1>
         <div className={styles.div}>{children}</div>
         <div className="flex gap-3">
           <button
             onClick={() => {
               handleYes && handleYes();
-              setIsOpenDialog(false);
+              setIsOpenModal(false);
             }}
             className={styles.btn}
           >
-            <span>Yes</span>
+            Yes
           </button>
           <button
             onClick={() => {
-              setIsOpenDialog(false);
+              setIsOpenModal(false);
             }}
             className={styles.btn}
           >
@@ -42,7 +40,7 @@ function Dialog(props: DialogProps) {
   );
 }
 
-export default Dialog;
+export default Modal;
 
 const styles = {
   dialog:

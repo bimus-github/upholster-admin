@@ -16,7 +16,9 @@ function Navbar() {
   return (
     <nav className={styles.nav}>
       <header className={styles.header}>
-        <strong className="text-[30px] sm:text-[25px]">Admin</strong>
+        <strong className="text-[30px] sm:text-[25px]   hover:animate-spin-one-time">
+          Admin
+        </strong>
       </header>
 
       <aside
@@ -40,7 +42,7 @@ function Navbar() {
           <a
             href="/"
             className={`${styles.link} ${location.pathname === "/" &&
-              "text-sky-500"}`}
+              "text-sky-600 scale-125 animate-pulse"}`}
           >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HAQIMIZDA
@@ -50,7 +52,7 @@ function Navbar() {
           <a
             href="/services"
             className={`${styles.link} ${location.pathname === "/services" &&
-              "text-sky-500"}`}
+              "text-sky-600 scale-125 animate-pulse"}`}
           >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HIZMATLAR
@@ -62,7 +64,7 @@ function Navbar() {
           <a
             href="/designs"
             className={`${styles.link} ${location.pathname === "/designs" &&
-              "text-sky-500"}`}
+              "text-sky-600 scale-125 animate-pulse"}`}
           >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               DIZAYNLAR
@@ -92,5 +94,5 @@ const styles = {
     "relative p-2 w-full text-center hover:bg-opacity-90 font-semibold hover:bg-slate-100 flex justify-center gap-4",
   p: "ease-linear transition-opacity duration-300",
   iconBtn: "hover:bg-slate-100 p-3 rounded-full",
-  icon: "text-2xl text-blue-500",
+  icon: "text-2xl text-blue-700 animate-pulse",
 };
