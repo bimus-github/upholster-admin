@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "../Dialog";
+import Modal from "../Modal";
 function TelInfoSection() {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
 
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
         <cite className={styles.cite}> Tel raqamlar</cite>
-        <button className={styles.iconBtn}>
+        <button
+          className={styles.iconBtn}
+          onClick={() => setIsOpenDialog(true)}
+        >
           <EditIcon color="primary" />
         </button>
       </legend>
@@ -18,9 +23,21 @@ function TelInfoSection() {
         <a href="tel:+998 99 999 99 99">+998 99 999 99 99</a>
       </ul>
 
-      <Dialog isOpenDialog={isOpenModal} setIsOpenDialog={setIsOpenModal}>
-        <p>Hello</p>
+      <Dialog
+        handleYes={() => setIsOpenModal(true)}
+        isOpenDialog={isOpenDialog}
+        setIsOpenDialog={setIsOpenDialog}
+      >
+        <div>
+          <p>Haqiqatdan ham telefon raqamlarni o'zgartirmoqchimsz?</p>
+        </div>
       </Dialog>
+
+      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
+        <div>
+          <p>Haqiqatdan ham telefon raqamlarni o'zgartirmoqchimsz?</p>
+        </div>
+      </Modal>
     </fieldset>
   );
 }

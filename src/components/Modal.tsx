@@ -15,6 +15,7 @@ function Modal(props: ModalProps) {
       className={`${styles.dialog} ${isOpenModal ? "flex" : "hidden"}`}
     >
       <main className={styles.main}>
+        <h1 className={styles.h1}>Modal</h1>
         <div className={styles.div}>{children}</div>
         <div className="flex gap-3">
           <button
@@ -22,17 +23,23 @@ function Modal(props: ModalProps) {
               handleYes && handleYes();
               setIsOpenModal(false);
             }}
-            className={styles.btn}
+            className={styles.btn + " " + styles.btnSave}
           >
-            Yes
+            Saqlash
+          </button>
+          <button
+            onClick={() => {}}
+            className={styles.btn + " " + styles.btnCleare}
+          >
+            Tozalash
           </button>
           <button
             onClick={() => {
               setIsOpenModal(false);
             }}
-            className={styles.btn}
+            className={styles.btn + " " + styles.btnClose}
           >
-            Close
+            Yopish
           </button>
         </div>
       </main>
@@ -46,10 +53,14 @@ const styles = {
   dialog:
     "w-full min-h-[100vh] fixed top-0 flex-col justify-center items-center z-20 bg-gray-800 bg-opacity-30",
   main:
-    "w-[400px] md:w-[350px] sm:w-[300px] min-h-[200px] bg-white drop-shadow-2xl rounded-lg p-5 flex flex-col items-center justify-around",
-  h1: "font-semibold text-[20px] sm:text-[18px] ",
+    "animate-ping-one-time w-[400px] md:w-[350px] sm:w-[300px] min-h-[200px] bg-white drop-shadow-2xl rounded-lg p-5 flex flex-col gap-4 items-center justify-around",
+  h1: "font-semibold text-[20px] sm:text-[18px] animate-spin-speed-one-time ",
   div: "w-full h-full p-2",
   btn:
-    " w-[100px] text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 bg-blue-500 hover:scale-110 hover:bg-blue-300 duration-300",
+    " w-[100px] text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 hover:scale-110  duration-300 drop-shadow-md",
+
+  btnSave: "bg-blue-500  hover:bg-blue-300",
+  btnClose: "bg-green-500 hover:bg-green-300",
+  btnCleare: "bg-red-500 hover:bg-red-300",
   span: " text-white duration-100 delay-100",
 };

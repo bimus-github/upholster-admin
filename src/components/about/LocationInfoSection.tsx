@@ -2,15 +2,21 @@
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "../Dialog";
+import Modal from "../Modal";
+import Input from "../Input";
 
 function LocationInfoSection() {
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
         <cite className={styles.cite}> Manzil</cite>
-        <button className={styles.iconBtn}>
+        <button
+          className={styles.iconBtn}
+          onClick={() => setIsOpenDialog(true)}
+        >
           <EditIcon color="primary" />
         </button>
       </legend>
@@ -19,9 +25,22 @@ function LocationInfoSection() {
         <a href="">location: Center</a>
       </ul>
 
-      <Dialog isOpenDialog={isOpenModal} setIsOpenDialog={setIsOpenModal}>
-        <p>Hello</p>
+      <Dialog
+        handleYes={() => setIsOpenModal(true)}
+        isOpenDialog={isOpenDialog}
+        setIsOpenDialog={setIsOpenDialog}
+      >
+        <div>
+          <p>Haqiqatdan ham manzilni o'zgartirmoqchimsz?</p>
+        </div>
       </Dialog>
+
+      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
+        <form action="" className="flex flex-col gap-4">
+          <Input title="Manzil" placeholder="m.u: Rohat kafesi yonida!" />
+          <Input title="Manzil" placeholder="m.u: Rohat kafesi yonida!" />
+        </form>
+      </Modal>
     </fieldset>
   );
 }

@@ -16,7 +16,7 @@ function Navbar() {
   return (
     <nav className={styles.nav}>
       <header className={styles.header}>
-        <strong className="text-[30px] sm:text-[25px]   hover:animate-spin-one-time">
+        <strong className="text-[30px] sm:text-[25px]  cursor-pointer">
           Admin
         </strong>
       </header>
@@ -94,5 +94,5 @@ const styles = {
     "relative p-2 w-full text-center hover:bg-opacity-90 font-semibold hover:bg-slate-100 flex justify-center gap-4",
   p: "ease-linear transition-opacity duration-300",
   iconBtn: "hover:bg-slate-100 p-3 rounded-full",
-  icon: "text-2xl text-blue-700 animate-pulse",
+  icon: "text-2xl text-blue-700 animate-ping-sm",
 };

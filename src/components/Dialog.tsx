@@ -24,17 +24,17 @@ function Dialog(props: DialogProps) {
               handleYes && handleYes();
               setIsOpenDialog(false);
             }}
-            className={styles.btn}
+            className={styles.btn + " " + styles.btnSave}
           >
-            <span>Yes</span>
+            <span>Ha</span>
           </button>
           <button
             onClick={() => {
               setIsOpenDialog(false);
             }}
-            className={styles.btn}
+            className={styles.btn + " " + styles.btnClose}
           >
-            Close
+            Yo'q
           </button>
         </div>
       </main>
@@ -48,10 +48,12 @@ const styles = {
   dialog:
     "w-full min-h-[100vh] fixed top-0 flex-col justify-center items-center z-20 bg-gray-800 bg-opacity-30",
   main:
-    "w-[400px] md:w-[350px] sm:w-[300px] min-h-[200px] bg-white drop-shadow-2xl rounded-lg p-5 flex flex-col items-center justify-around",
-  h1: "font-semibold text-[20px] sm:text-[18px] ",
+    " animate-ping-one-time w-[400px] md:w-[350px] sm:w-[300px] min-h-[200px] bg-white drop-shadow-2xl rounded-lg p-5 flex flex-col items-center justify-around",
+  h1: "font-semibold text-[20px] sm:text-[18px] animate-spin-speed-one-time",
   div: "w-full h-full p-2",
   btn:
-    " w-[100px] text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 bg-blue-500 hover:scale-110 hover:bg-blue-300 duration-300",
+    " w-[100px] text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 hover:scale-110 duration-300",
+  btnSave: "bg-blue-500  hover:bg-blue-300",
+  btnClose: "bg-green-500 hover:bg-green-300",
   span: " text-white duration-100 delay-100",
 };
