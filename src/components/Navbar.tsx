@@ -8,6 +8,7 @@ import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { Outlet, useLocation } from "react-router-dom";
+import { Tooltip } from "@mui/material";
 
 function Navbar() {
   const location = useLocation();
@@ -32,9 +33,13 @@ function Navbar() {
           className={styles.iconBtn}
         >
           {isClosedSideBar ? (
-            <MenuOpenIcon fontSize="large" className={styles.icon} />
+            <Tooltip title="Menuni ochish">
+              <MenuOpenIcon fontSize="large" className={styles.icon} />
+            </Tooltip>
           ) : (
-            <ArrowBackIosIcon fontSize="large" className={styles.icon} />
+            <Tooltip title="Menuni yopish">
+              <ArrowBackIosIcon fontSize="large" className={styles.icon} />
+            </Tooltip>
           )}
         </button>
         <div className="w-full h-[1px] bg-black" />
@@ -47,7 +52,11 @@ function Navbar() {
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               HAQIMIZDA
             </p>
-            {isClosedSideBar && <ImportContactsIcon className="absolute" />}
+            {isClosedSideBar && (
+              <Tooltip title="Haqimizda">
+                <ImportContactsIcon className="absolute" />
+              </Tooltip>
+            )}
           </a>
           <a
             href="/services"
@@ -58,7 +67,9 @@ function Navbar() {
               HIZMATLAR
             </p>
             {isClosedSideBar && (
-              <MiscellaneousServicesIcon className="absolute" />
+              <Tooltip title="Hizmatlar">
+                <MiscellaneousServicesIcon className="absolute" />
+              </Tooltip>
             )}
           </a>
           <a
@@ -69,7 +80,11 @@ function Navbar() {
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               DIZAYNLAR
             </p>
-            {isClosedSideBar && <DirectionsCarIcon className="absolute" />}
+            {isClosedSideBar && (
+              <Tooltip title="Dizayn">
+                <DirectionsCarIcon className="absolute" />
+              </Tooltip>
+            )}
           </a>
         </ul>
       </aside>
