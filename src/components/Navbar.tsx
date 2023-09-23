@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -7,17 +7,31 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Tooltip } from "@mui/material";
+import { typeText } from "../unils/functions/typeText";
 
 function Navbar() {
+  const textRef: React.LegacyRef<HTMLElement> = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const [isClosedSideBar, setIsClosedSideBar] = useState<boolean>(true);
+
+  useEffect(() => {
+    typeText(textRef);
+  }, []);
+
+  const handleNavigatePage = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <nav className={styles.nav}>
       <header className={styles.header}>
-        <strong className="text-[30px] sm:text-[25px]  cursor-pointer">
+        <strong
+          ref={textRef}
+          className="text-[30px] sm:text-[25px] cursor-pointer"
+        >
           Admin
         </strong>
       </header>
@@ -45,7 +59,7 @@ function Navbar() {
         <div className="w-full h-[1px] bg-black" />
         <ul className={styles.ul}>
           <a
-            href="/"
+            onClick={() => handleNavigatePage("/")}
             className={`${styles.link} ${location.pathname === "/" &&
               "text-sky-600 scale-125 animate-pulse"}`}
           >
@@ -59,7 +73,7 @@ function Navbar() {
             )}
           </a>
           <a
-            href="/services"
+            onClick={() => handleNavigatePage("/services")}
             className={`${styles.link} ${location.pathname === "/services" &&
               "text-sky-600 scale-125 animate-pulse"}`}
           >
@@ -73,9 +87,9 @@ function Navbar() {
             )}
           </a>
           <a
-            href="/designs"
             className={`${styles.link} ${location.pathname === "/designs" &&
               "text-sky-600 scale-125 animate-pulse"}`}
+            onClick={() => handleNavigatePage("/designs")}
           >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
               DIZAYNLAR
