@@ -6,6 +6,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Tooltip } from "@mui/material";
 import Modal from "../Modal";
 import Input from "../Input";
+import Dialog from "../Dialog";
 
 const garageImage =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMyuehKGonIes74bz4xrGZW8EGBqgWq7V7Yg&usqp=CAU";
@@ -16,6 +17,8 @@ const image2 =
 function ServicesSection() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isOpenChangeDialog, setIsOpenChangeDialog] = useState<boolean>(false);
+  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const handleOpenImages = () => {
@@ -47,14 +50,20 @@ function ServicesSection() {
             <p>Servise name</p>
             <sup>
               <Tooltip title="O'zgartirish">
-                <button className={styles.iconBtn}>
+                <button
+                  className={styles.iconBtn}
+                  onClick={() => setIsOpenChangeDialog(true)}
+                >
                   <EditIcon color="primary" fontSize="small" />
                 </button>
               </Tooltip>
             </sup>
             <sup>
               <Tooltip title="O'chirish">
-                <button className={`${styles.iconBtn} text-red-500`}>
+                <button
+                  className={`${styles.iconBtn} text-red-500`}
+                  onClick={() => setIsOpenDeleteDialog(true)}
+                >
                   <DeleteIcon fontSize="small" />
                 </button>
               </Tooltip>
@@ -72,6 +81,19 @@ function ServicesSection() {
           </picture>
         </li>
       </ul>
+
+      <Dialog
+        isOpenDialog={isOpenChangeDialog}
+        setIsOpenDialog={setIsOpenChangeDialog}
+      >
+        Rostanham o'zgartirishni istaysizmi?
+      </Dialog>
+      <Dialog
+        isOpenDialog={isOpenDeleteDialog}
+        setIsOpenDialog={setIsOpenDeleteDialog}
+      >
+        Rostanham o'chirishni istaysizmi?
+      </Dialog>
 
       <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
         <form action="" className="flex flex-col gap-3">

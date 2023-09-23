@@ -4,7 +4,7 @@ import { ServicesSection } from "../components";
 function Services() {
   return (
     <section className={styles.main}>
-      {/* hismat turlari */}
+      {/* types of services section */}
       <ServicesSection />
     </section>
   );
