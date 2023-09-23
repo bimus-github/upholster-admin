@@ -56,7 +56,8 @@ export default GarageImageSection;
 const styles = {
   fieldset:
     "border w-full p-5 rounded-md border-black flex flex-col items-center",
-  legend: "relative font-semibold text-[20px]",
+  legend:
+    "relative font-semibold text-[20px] flex gap-2 justify-center items-center",
   cite: "text-sky-500 ",
   iconBtn: "p-3 hover:bg-slate-100 rounded-full",
   picture:
