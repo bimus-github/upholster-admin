@@ -98,6 +98,7 @@ function ServicesSection() {
       >
         Rostanham o'zgartirishni istaysizmi?
       </Dialog>
+
       <Dialog
         isOpenDialog={isOpenDeleteDialog}
         setIsOpenDialog={setIsOpenDeleteDialog}

@@ -22,5 +22,5 @@ function About() {
 export default About;
 
 const styles = {
-  main: "min-h-[100vh] flex flex-col p-10 items-center gap-10",
+  main: "min-h-[100vh] flex flex-col p-10 sm:p-5 items-center gap-10",
 };
