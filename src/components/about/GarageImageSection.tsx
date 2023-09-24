@@ -2,12 +2,15 @@ import React, { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "../Dialog";
 import ImageLoading from "../ImageLoading";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase";
 
 export const garageImage =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMyuehKGonIes74bz4xrGZW8EGBqgWq7V7Yg&usqp=CAU";
 
 function GarageImageSection() {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isLoadingImage, setIsLoadingImage] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const onClick = () => {
     fileInputRef?.current?.click();
@@ -15,7 +18,31 @@ function GarageImageSection() {
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
+
+    if (!file) return;
+    setIsLoadingImage(true);
+
+    const storageRef = ref(storage, "images/" + file.name);
+
+    uploadBytes(storageRef, file)
+      .then((snapshot) => {
+        console.log("Uploaded a blob or file!");
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        getDownloadURL(storageRef)
+          .then((url) => {
+            console.log(url);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            setIsLoadingImage(false);
+          });
+      });
   };
 
   return (
@@ -28,8 +55,11 @@ function GarageImageSection() {
       </legend>
 
       <picture className={styles.picture}>
-        {/* <img src={garageImage} alt="garage_image" className={styles.image} /> */}
-        <ImageLoading />
+        {isLoadingImage ? (
+          <ImageLoading />
+        ) : (
+          <img src={garageImage} alt="garage_image" className={styles.image} />
+        )}
       </picture>
 
       <input
