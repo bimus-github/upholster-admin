@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "../Dialog";
+import ImageLoading from "../ImageLoading";
 
 export const garageImage =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMyuehKGonIes74bz4xrGZW8EGBqgWq7V7Yg&usqp=CAU";
@@ -25,8 +26,10 @@ function GarageImageSection() {
           <EditIcon color="primary" />
         </button>
       </legend>
+
       <picture className={styles.picture}>
-        <img src={garageImage} alt="garage_image" className={styles.image} />
+        {/* <img src={garageImage} alt="garage_image" className={styles.image} /> */}
+        <ImageLoading />
       </picture>
 
       <input

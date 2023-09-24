@@ -9,12 +9,20 @@ module.exports = {
         "animate-bounce-one-time": "bounce 2s linear 1",
         "ping-one-time": "ping-sm 1s linear 1",
         "ping-sm": "ping-sm 1s linear infinite",
+        "flip-load": "flip-load 2s linear infinite",
       },
       keyframes: {
         "ping-sm": {
           "0%": { transform: "scale(1)", opacity: "1" },
           "50%": { transform: "scale(0.9)", opacity: "0.9" },
           "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "flip-load": {
+          "0%": { transform: "rotateX(0deg) rotateY(0deg)" },
+          "25%": { transform: "rotateX(0deg) rotateY(180deg)" },
+          "50%": { transform: "rotateX(180deg) rotateY(180deg)" },
+          "75%": { transform: "rotateX(180deg) rotateY(0deg)" },
+          "100%": { transform: "rotateX(0deg) rotateY(0deg)" },
         },
       },
     },
