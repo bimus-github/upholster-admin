@@ -36,7 +36,6 @@ function Dialog(props: DialogProps) {
           <button
             onClick={() => {
               handleYes && handleYes();
-              setIsOpenDialog(false);
             }}
             className={styles.btn + " " + styles.btnSave}
           >

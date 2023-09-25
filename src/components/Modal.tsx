@@ -5,10 +5,17 @@ interface ModalProps {
   setIsOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   children: React.ReactNode;
   handleYes?: () => void;
+  handeClear?: () => void;
 }
 
 function Modal(props: ModalProps) {
-  const { isOpenModal, setIsOpenModal, children, handleYes } = props;
+  const {
+    isOpenModal,
+    setIsOpenModal,
+    children,
+    handleYes,
+    handeClear,
+  } = props;
 
   const handleBackgroundClick = (
     event: React.MouseEvent<HTMLDialogElement>
@@ -31,14 +38,15 @@ function Modal(props: ModalProps) {
           <button
             onClick={() => {
               handleYes && handleYes();
-              setIsOpenModal(false);
             }}
             className={styles.btn + " " + styles.btnSave}
           >
             Saqlash
           </button>
           <button
-            onClick={() => {}}
+            onClick={() => {
+              handeClear && handeClear();
+            }}
             className={styles.btn + " " + styles.btnCleare}
           >
             Tozalash
