@@ -1,5 +1,6 @@
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "..";
+import { Address_Type } from "../../types";
 
 const collection_name = "info";
 
@@ -9,7 +10,7 @@ export const setGarageImage = async (url: string) => {
       url,
     });
   } catch (err) {
-    console.log(err);
+    console.log("Error while setting garage image: ", err);
   }
 };
 
@@ -27,7 +28,7 @@ export const getGarageImage = async () => {
       return null;
     }
   } catch (err) {
-    console.log(err);
+    console.log("Error while getting garage image: ", err);
   }
 };
 
@@ -51,7 +52,7 @@ export const addTelNumber = async (number: string) => {
       return null;
     }
   } catch (err) {
-    console.log(err);
+    console.log("Error while adding number: ", err);
   }
 };
 
@@ -69,7 +70,7 @@ export const getTelNumbers = async () => {
       return null;
     }
   } catch (err) {
-    console.log(err);
+    console.log("Error while getting numbers: ", err);
   }
 };
 
@@ -88,6 +89,61 @@ export const deleteTelNumber = async (number: string) => {
       });
     }
   } catch (err) {
-    console.log(err);
+    console.log("Error while deleting number: ", err);
+  }
+};
+
+export const addAddress = async (address: Address_Type) => {
+  try {
+    const docRef = doc(db, collection_name, "address");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      const newAddress = [...docSnap.data().address, address];
+
+      await updateDoc(docRef, {
+        address: newAddress,
+      });
+    }
+  } catch (err) {
+    console.log("Error while adding address: ", err);
+  }
+};
+
+export const getAddress = async () => {
+  try {
+    const docRef = doc(db, collection_name, "address");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      return docSnap.data() as { address: Address_Type[] };
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+      return null;
+    }
+  } catch (err) {
+    console.log("Error while getting address: ", err);
+  }
+};
+
+export const deleteAddress = async (address: Address_Type) => {
+  try {
+    const docRef = doc(db, collection_name, "address");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      const data = docSnap.data() as { address: Address_Type[] };
+      const newAddress = data.address.filter((item) => item !== address);
+
+      await updateDoc(docRef, {
+        address: newAddress,
+      });
+    }
+  } catch (err) {
+    console.log("Error while deleting address: ", err);
   }
 };
