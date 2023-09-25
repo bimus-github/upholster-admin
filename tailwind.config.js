@@ -10,6 +10,8 @@ module.exports = {
         "ping-one-time": "ping-sm 1s linear 1",
         "ping-sm": "ping-sm 1s linear infinite",
         "flip-load": "flip-load 2s linear infinite",
+        "spinner-one": "spinner-one 1s linear infinite",
+        "spinner-two": "spinner-two 1s linear infinite",
       },
       keyframes: {
         "ping-sm": {
@@ -23,6 +25,16 @@ module.exports = {
           "50%": { transform: "rotateX(180deg) rotateY(180deg)" },
           "75%": { transform: "rotateX(180deg) rotateY(0deg)" },
           "100%": { transform: "rotateX(0deg) rotateY(0deg)" },
+        },
+        "spinner-one": {
+          "0%": { transform: "rotate(0deg)", borderWidth: "8px" },
+          "50%": { transform: "rotate(180deg)", borderWidth: "1px" },
+          "100%": { transform: "rotate(360deg)", borderWidth: "8px" },
+        },
+        "spinner-two": {
+          "0%": { transform: "rotate(0deg)", borderWidth: "1px" },
+          "50%": { transform: "rotate(180deg)", borderWidth: "8px" },
+          "100%": { transform: "rotate(360deg)", borderWidth: "1px" },
         },
       },
     },
