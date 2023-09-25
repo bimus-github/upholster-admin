@@ -4,7 +4,11 @@ import {
   LocationInfoSection,
   TelInfoSection,
 } from "../components";
-import { getGarageImage, getTelNumbers } from "../firebase/functions/info";
+import {
+  getAddress,
+  getGarageImage,
+  getTelNumbers,
+} from "../firebase/functions/info";
 import { useAppDispatch } from "../store/hooks";
 import { infoActions } from "../store/features/infoSlices";
 
@@ -17,13 +21,16 @@ function About() {
         if (url) dispatch(infoActions.setGarageImage(url.url));
       })
       .finally(() => {});
-  }, [dispatch]);
 
-  useEffect(() => {
     getTelNumbers().then((data) => {
       if (data) dispatch(infoActions.setNumbers(data.number));
     });
+
+    getAddress().then((data) => {
+      if (data) dispatch(infoActions.setAddress(data.address));
+    });
   }, [dispatch]);
+
   return (
     <section className={styles.main}>
       {/*garage image section */}
