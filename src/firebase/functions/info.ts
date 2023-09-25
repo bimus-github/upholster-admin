@@ -129,7 +129,7 @@ export const getAddress = async () => {
   }
 };
 
-export const deleteAddress = async (address: Address_Type) => {
+export const deleteAddress = async (url: string) => {
   try {
     const docRef = doc(db, collection_name, "address");
     const docSnap = await getDoc(docRef);
@@ -137,7 +137,7 @@ export const deleteAddress = async (address: Address_Type) => {
     if (docSnap.exists()) {
       console.log("Document data:", docSnap.data());
       const data = docSnap.data() as { address: Address_Type[] };
-      const newAddress = data.address.filter((item) => item !== address);
+      const newAddress = data.address.filter((item) => item.url !== url);
 
       await updateDoc(docRef, {
         address: newAddress,
