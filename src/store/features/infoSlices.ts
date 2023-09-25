@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Info_Type } from "../../types";
+import { Address_Type, Info_Type } from "../../types";
 
 const intialState: Info_Type = {
   garageImage: "",
@@ -25,16 +25,13 @@ const infoSlice = createSlice({
     setNumbers: (state, action: { payload: string[] }) => {
       state.number = action.payload;
     },
-    setAddress: (
-      state,
-      action: { payload: { name: string; url: string }[] }
-    ) => {
+    setAddress: (state, action: { payload: Address_Type[] }) => {
       state.address = action.payload;
     },
     addNumber: (state, action: { payload: string }) => {
       state.number.push(action.payload);
     },
-    addAddress: (state, action: { payload: { name: string; url: string } }) => {
+    addAddress: (state, action: { payload: Address_Type }) => {
       state.address.push(action.payload);
     },
     removeAddress: (state, action: { payload: string }) => {
