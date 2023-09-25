@@ -8,7 +8,8 @@ import LocationInfoSection from "./about/LocationInfoSection";
 import TelInfoSection from "./about/TelInfoSection";
 import Cars from "./designs/Cars";
 import Car from "./designs/Car";
-import ImageLoading from "./ImageLoading";
+import ImageLoading from "./loading/ImageLoading";
+import SpinnerLoading from "./loading/SpinnerLoading";
 
 export {
   TelInfoSection,
@@ -21,5 +22,6 @@ export {
   Modal,
   Dialog,
   Navbar,
+  SpinnerLoading,
   ImageLoading,
 };

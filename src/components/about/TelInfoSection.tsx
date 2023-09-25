@@ -10,6 +10,8 @@ import { addTelNumber, deleteTelNumber } from "../../firebase/functions/info";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { infoActions } from "../../store/features/infoSlices";
 import { Tooltip } from "@mui/material";
+
+import SpinnerLoading from "../loading/SpinnerLoading";
 function TelInfoSection() {
   const dispatch = useAppDispatch();
   const numbers = useAppSelector((state) => state.info.number);
@@ -19,6 +21,8 @@ function TelInfoSection() {
   const [isOpenAddDialog, setIsOpenAddDialog] = useState<boolean>(false);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [deletedNumber, setDeletedNumber] = useState<string>("");
+  const [isDeleting, setisDeleting] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const [telNumber, setTelNumber] = useState<string>("");
 
@@ -27,26 +31,35 @@ function TelInfoSection() {
   }, []);
 
   const handleAddTelNumber = () => {
+    setIsSaving(true);
     if (telNumber.length !== 12) return;
-    console.log(telNumber);
 
-    addTelNumber(telNumber).then(() => {
-      console.log("saved");
-      setIsOpenModal(false);
-      dispatch(infoActions.addNumber(telNumber));
-      setTelNumber("");
-      setIsOpenAddDialog(false);
-    });
+    addTelNumber(telNumber)
+      .then(() => {
+        setIsOpenModal(false);
+        dispatch(infoActions.addNumber(telNumber));
+        setTelNumber("");
+        setIsOpenAddDialog(false);
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
   };
 
   const handleDeleteTelNumber = () => {
-    deleteTelNumber(deletedNumber).then(() => {
-      console.log("deleted");
-      setIsOpenModal(false);
-      dispatch(infoActions.removeNumber(deletedNumber));
-      setTelNumber("");
-      setIsOpenDeleteDialog(false);
-    });
+    setIsOpenDeleteDialog(false);
+
+    setisDeleting(true);
+
+    deleteTelNumber(deletedNumber)
+      .then(() => {
+        setIsOpenModal(false);
+        dispatch(infoActions.removeNumber(deletedNumber));
+        setDeletedNumber("");
+      })
+      .finally(() => {
+        setisDeleting(false);
+      });
   };
 
   return (
@@ -67,17 +80,21 @@ function TelInfoSection() {
             <a href={`tel: +998 ${number}`} ref={telRef}>
               {`+998 ${number}`}
             </a>
-            <Tooltip title="O'chirish">
-              <button
-                onClick={() => {
-                  setIsOpenDeleteDialog(true);
-                  setDeletedNumber(number);
-                }}
-                className={`${styles.iconBtn} text-red-500`}
-              >
-                <DeleteIcon />
-              </button>
-            </Tooltip>
+            {isDeleting && number === deletedNumber ? (
+              <SpinnerLoading scale={0.3} />
+            ) : (
+              <Tooltip title="O'chirish">
+                <button
+                  onClick={() => {
+                    setIsOpenDeleteDialog(true);
+                    setDeletedNumber(number);
+                  }}
+                  className={`${styles.iconBtn} text-red-500`}
+                >
+                  <DeleteIcon />
+                </button>
+              </Tooltip>
+            )}
           </li>
         ))}
       </ul>
@@ -107,6 +124,7 @@ function TelInfoSection() {
         setIsOpenModal={setIsOpenModal}
         handeClear={() => setTelNumber("")}
         handleYes={handleAddTelNumber}
+        isSaving={isSaving}
       >
         <Input
           placeholder={`eg: ${formatTelNumber("123456789")}`}

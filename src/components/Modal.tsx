@@ -6,6 +6,7 @@ interface ModalProps {
   children: React.ReactNode;
   handleYes?: () => void;
   handeClear?: () => void;
+  isSaving?: boolean;
 }
 
 function Modal(props: ModalProps) {
@@ -15,6 +16,7 @@ function Modal(props: ModalProps) {
     children,
     handleYes,
     handeClear,
+    isSaving,
   } = props;
 
   const handleBackgroundClick = (
@@ -41,6 +43,9 @@ function Modal(props: ModalProps) {
             }}
             className={styles.btn + " " + styles.btnSave}
           >
+            {isSaving && (
+              <div className="w-6 h-6 border-transparent border-t-black border-2 rounded-full animate-spin" />
+            )}
             Saqlash
           </button>
           <button
@@ -75,7 +80,7 @@ const styles = {
   h1: "font-semibold text-[20px] sm:text-[18px] animate-spin-speed-one-time ",
   div: "w-full h-full p-2",
   btn:
-    " w-[100px] sm:w-full text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 hover:scale-110  duration-300 drop-shadow-md",
+    " w-[100px] sm:w-full text-center font-semibold px-4 py-1 rounded-md transition ease-in-out delay-150 hover:scale-110  duration-300 drop-shadow-md flex items-center gap-2",
 
   btnSave: "bg-blue-500  hover:bg-blue-300",
   btnClose: "bg-green-500 hover:bg-green-300",

@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "../Dialog";
-import ImageLoading from "../ImageLoading";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { infoActions } from "../../store/features/infoSlices";
 import { setGarageImage } from "../../firebase/functions/info";
+import ImageLoading from "../loading/ImageLoading";
 
 export const garageImage =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMyuehKGonIes74bz4xrGZW8EGBqgWq7V7Yg&usqp=CAU";
