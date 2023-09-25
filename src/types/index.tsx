@@ -1,10 +1,12 @@
 export type Info_Type = {
   garageImage: string;
   number: string[];
-  address: {
-    name: string;
-    url: string;
-  }[];
+  address: Address_Type[];
+};
+
+export type Address_Type = {
+  name: string;
+  url: string;
 };
 
 export type SERVICES = string[];
