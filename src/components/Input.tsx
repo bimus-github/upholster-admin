@@ -1,4 +1,5 @@
 import React from "react";
+import { formatTelNumber } from "../unils/functions/formatTelNumber";
 
 interface InputProps {
   title: string;
@@ -34,10 +35,16 @@ function Input({
         <input
           placeholder={placeholder}
           value={value}
-          onChange={(e) => setValue && setValue(e.target.value)}
+          onChange={(e) =>
+            setValue &&
+            setValue(
+              type === "tel" ? formatTelNumber(e.target.value) : e.target.value
+            )
+          }
           className={`w-full focus:outline-none ${height}`}
           type={type}
           autoComplete="off"
+          pattern="[0-9]{2} [0-9]{3} [0-9]{2} [0-9]{2}"
         />
       )}
     </fieldset>
