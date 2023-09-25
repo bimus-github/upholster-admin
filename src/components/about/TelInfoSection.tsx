@@ -4,15 +4,50 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import Dialog from "../Dialog";
 import Modal from "../Modal";
 import { typeText } from "../../unils/functions/typeText";
+import { formatTelNumber } from "../../unils/functions/formatTelNumber";
+import Input from "../Input";
+import { addTelNumber, deleteTelNumber } from "../../firebase/functions/info";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { infoActions } from "../../store/features/infoSlices";
+import { Tooltip } from "@mui/material";
 function TelInfoSection() {
+  const dispatch = useAppDispatch();
+  const numbers = useAppSelector((state) => state.info.number);
+
   const telRef = useRef<HTMLAnchorElement>(null);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [isOpenAddDialog, setIsOpenAddDialog] = useState<boolean>(false);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
+  const [deletedNumber, setDeletedNumber] = useState<string>("");
+
+  const [telNumber, setTelNumber] = useState<string>("");
 
   useEffect(() => {
     typeText(telRef, 50);
   }, []);
+
+  const handleAddTelNumber = () => {
+    if (telNumber.length !== 12) return;
+    console.log(telNumber);
+
+    addTelNumber(telNumber).then(() => {
+      console.log("saved");
+      setIsOpenModal(false);
+      dispatch(infoActions.addNumber(telNumber));
+      setTelNumber("");
+      setIsOpenAddDialog(false);
+    });
+  };
+
+  const handleDeleteTelNumber = () => {
+    deleteTelNumber(deletedNumber).then(() => {
+      console.log("deleted");
+      setIsOpenModal(false);
+      dispatch(infoActions.removeNumber(deletedNumber));
+      setTelNumber("");
+      setIsOpenDeleteDialog(false);
+    });
+  };
 
   return (
     <fieldset className={styles.fieldset}>
@@ -27,17 +62,24 @@ function TelInfoSection() {
       </legend>
 
       <ul className={styles.ul}>
-        <li className={styles.li}>
-          <a href="tel:+998 99 999 99 99" ref={telRef}>
-            +998 99 999 99 99
-          </a>
-          <button
-            onClick={() => setIsOpenDeleteDialog(true)}
-            className={`${styles.iconBtn} text-red-500`}
-          >
-            <DeleteIcon />
-          </button>
-        </li>
+        {numbers.map((number, index) => (
+          <li key={index} className={styles.li}>
+            <a href={`tel: +998 ${number}`} ref={telRef}>
+              {`+998 ${number}`}
+            </a>
+            <Tooltip title="O'chirish">
+              <button
+                onClick={() => {
+                  setIsOpenDeleteDialog(true);
+                  setDeletedNumber(number);
+                }}
+                className={`${styles.iconBtn} text-red-500`}
+              >
+                <DeleteIcon />
+              </button>
+            </Tooltip>
+          </li>
+        ))}
       </ul>
 
       <Dialog
@@ -49,8 +91,9 @@ function TelInfoSection() {
           <p>Haqiqatdan ham telefon raqam qo'shmoqchimsz?</p>
         </div>
       </Dialog>
+
       <Dialog
-        handleYes={() => setIsOpenModal(true)}
+        handleYes={handleDeleteTelNumber}
         isOpenDialog={isOpenDeleteDialog}
         setIsOpenDialog={setIsOpenDeleteDialog}
       >
@@ -59,10 +102,19 @@ function TelInfoSection() {
         </div>
       </Dialog>
 
-      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
-        <div>
-          <p>Haqiqatdan ham telefon raqamlarni o'zgartirmoqchimsz?</p>
-        </div>
+      <Modal
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        handeClear={() => setTelNumber("")}
+        handleYes={handleAddTelNumber}
+      >
+        <Input
+          placeholder={`eg: ${formatTelNumber("123456789")}`}
+          title="Telefon raqam"
+          value={telNumber}
+          setValue={setTelNumber}
+          type="tel"
+        />
       </Modal>
     </fieldset>
   );
