@@ -6,16 +6,65 @@ import Dialog from "../Dialog";
 import Modal from "../Modal";
 import Input from "../Input";
 import { typeText } from "../../unils/functions/typeText";
+import { addAddress, deleteAddress } from "../../firebase/functions/info";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { infoActions } from "../../store/features/infoSlices";
+import { Tooltip } from "@mui/material";
+import SpinnerLoading from "../loading/SpinnerLoading";
 
 function LocationInfoSection() {
-  const telRef = useRef<HTMLAnchorElement>(null);
+  const dispatch = useAppDispatch();
+  const addresses = useAppSelector((state) => state.info.address);
   const [isOpenAddDialog, setIsOpenAddDialog] = useState<boolean>(false);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
 
-  useEffect(() => {
-    typeText(telRef);
-  }, []);
+  const [addressName, setAddressName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [deletedAddress, setDeletedAddress] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+  const handleAddAddress = () => {
+    if (!addressName) return;
+    if (!address) return;
+    setIsSaving(true);
+
+    addAddress({
+      name: addressName,
+      url: address,
+    })
+      .then(() => {
+        setIsOpenModal(false);
+        setIsOpenAddDialog(false);
+        dispatch(
+          infoActions.addAddress({
+            name: addressName,
+            url: address,
+          })
+        );
+        setAddressName("");
+        setAddress("");
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  };
+
+  const handleDeleteAddress = () => {
+    setIsDeleting(true);
+    setIsOpenDeleteDialog(false);
+
+    deleteAddress(deletedAddress)
+      .then(() => {
+        setIsOpenModal(false);
+        dispatch(infoActions.removeAddress(deletedAddress));
+        setDeletedAddress("");
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   return (
     <fieldset className={styles.fieldset}>
@@ -29,17 +78,32 @@ function LocationInfoSection() {
         </button>
       </legend>
       <ul className={styles.ul}>
-        <li className={styles.li}>
-          <a href="tel:+998 99 999 99 99" ref={telRef}>
-            +998 99 999 99 99
-          </a>
-          <button
-            onClick={() => setIsOpenDeleteDialog(true)}
-            className={`${styles.iconBtn} text-red-500`}
-          >
-            <DeleteIcon />
-          </button>
-        </li>
+        {addresses.map((address, index) => (
+          <React.Fragment key={index}>
+            {address.url.length === 0 ? (
+              <p key={index}>Hali manzil mavjud emas</p>
+            ) : (
+              <li key={index} className={styles.li}>
+                <a href={`${address.url}`}>{address.name}</a>
+                {isDeleting && address.url === deletedAddress ? (
+                  <SpinnerLoading scale={0.3} />
+                ) : (
+                  <Tooltip title="O'chirish">
+                    <button
+                      onClick={() => {
+                        setIsOpenDeleteDialog(true);
+                        setDeletedAddress(address.url);
+                      }}
+                      className={`${styles.iconBtn} text-red-500`}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </Tooltip>
+                )}
+              </li>
+            )}
+          </React.Fragment>
+        ))}
       </ul>
 
       <Dialog
@@ -53,20 +117,37 @@ function LocationInfoSection() {
       </Dialog>
 
       <Dialog
-        handleYes={() => setIsOpenModal(true)}
+        handleYes={handleDeleteAddress}
         isOpenDialog={isOpenDeleteDialog}
         setIsOpenDialog={setIsOpenDeleteDialog}
       >
         <div>
-          <p>Haqiqatdan ham manzilni o'zgartirmoqchimsz?</p>
+          <p>Haqiqatdan ham manzilni o'chirmoqchimsz?</p>
         </div>
       </Dialog>
 
-      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
-        <form action="" className="flex flex-col gap-4">
-          <Input title="Manzil" placeholder="m.u: Rohat kafesi yonida!" />
-          <Input title="Manzil" placeholder="m.u: Rohat kafesi yonida!" />
-        </form>
+      <Modal
+        handleYes={handleAddAddress}
+        handeClear={() => {
+          setAddressName("");
+          setAddress("");
+        }}
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        isSaving={isSaving}
+      >
+        <Input
+          title="Ism"
+          placeholder="m.u: Telegram"
+          value={addressName}
+          setValue={setAddressName}
+        />
+        <Input
+          title="Manzil"
+          placeholder="m.u: t.me/muhammad_amin_sherzod_aliy"
+          value={address}
+          setValue={setAddress}
+        />
       </Modal>
     </fieldset>
   );
