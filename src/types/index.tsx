@@ -1,9 +1,10 @@
-export type About_Type = {
+export type Info_Type = {
   garageImage: string;
-  number1: string;
-  number2: string;
-  telegram: string;
-  location: string;
+  number: string[];
+  address: {
+    name: string;
+    url: string;
+  }[];
 };
 
 export type SERVICES = string[];
