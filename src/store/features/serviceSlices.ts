@@ -13,8 +13,11 @@ export const serviceSlices = createSlice({
     addService: (state, action: { payload: Service_Type }) => {
       state.push(action.payload);
     },
-    removeService: (state, action: { payload: string }) => {
-      state = state.filter((item) => item.name !== action.payload);
+    removeService: (state, action: { payload: { name: string } }) => {
+      const filteredData = state.filter(
+        (item) => item.name !== action.payload.name
+      );
+      return filteredData;
     },
     updateService: (state, action: { payload: Service_Type }) => {
       const index = state.findIndex(
