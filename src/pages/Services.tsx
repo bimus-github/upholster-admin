@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ServicesSection } from "../components";
+import { getServices } from "../firebase/functions/service";
+import { useAppDispatch } from "../store/hooks";
+import { serviceAction } from "../store/features/serviceSlices";
 
 function Services() {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    getServices().then((data) => {
+      if (data) dispatch(serviceAction.setServices(data));
+    });
+  }, [dispatch]);
   return (
     <section className={styles.main}>
       {/* types of services section */}
