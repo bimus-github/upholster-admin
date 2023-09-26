@@ -44,6 +44,15 @@ export const carSlices = createSlice({
         }
       });
     },
+    removeServiceByCar: (
+      state,
+      action: { payload: { name: string; serviceName: string } }
+    ) => {
+      const filteredData = state.filter(
+        (item) => item.name !== action.payload.name
+      );
+      return filteredData;
+    },
   },
 });
 
