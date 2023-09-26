@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   GarageImageSection,
+  ImageLoading,
   LocationInfoSection,
   TelInfoSection,
 } from "../components";
@@ -14,22 +15,33 @@ import { infoActions } from "../store/features/infoSlices";
 
 function About() {
   const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getGarageImage()
-      .then((url) => {
-        if (url) dispatch(infoActions.setGarageImage(url.url));
-      })
-      .finally(() => {});
+    setIsLoading(true);
+    getGarageImage().then((url) => {
+      if (url) dispatch(infoActions.setGarageImage(url.url));
+    });
 
     getTelNumbers().then((data) => {
       if (data) dispatch(infoActions.setNumbers(data.number));
     });
 
-    getAddress().then((data) => {
-      if (data) dispatch(infoActions.setAddress(data.address));
-    });
+    getAddress()
+      .then((data) => {
+        if (data) dispatch(infoActions.setAddress(data.address));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [dispatch]);
+
+  if (isLoading)
+    return (
+      <div className="h-[100vh] w-full flex justify-center items-center">
+        <ImageLoading />
+      </div>
+    );
 
   return (
     <section className={styles.main}>

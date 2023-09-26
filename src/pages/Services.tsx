@@ -1,16 +1,31 @@
 import React, { useEffect } from "react";
-import { ServicesSection } from "../components";
+import { ImageLoading, ServicesSection } from "../components";
 import { getServices } from "../firebase/functions/service";
 import { useAppDispatch } from "../store/hooks";
 import { serviceAction } from "../store/features/serviceSlices";
 
 function Services() {
   const dispatch = useAppDispatch();
+  const [isLoading, setIsLoading] = React.useState(false);
+
   useEffect(() => {
-    getServices().then((data) => {
-      if (data) dispatch(serviceAction.setServices(data));
-    });
+    setIsLoading(true);
+    getServices()
+      .then((data) => {
+        if (data) dispatch(serviceAction.setServices(data));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="h-[100vh] w-full flex justify-center items-center">
+        <ImageLoading />
+      </div>
+    );
+  }
   return (
     <section className={styles.main}>
       {/* types of services section */}
