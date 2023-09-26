@@ -10,7 +10,7 @@ import Dialog from "../Dialog";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
 import SpinnerLoading from "../loading/SpinnerLoading";
-import { addService } from "../../firebase/functions/service";
+import { addService, removeService } from "../../firebase/functions/service";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { serviceAction } from "../../store/features/serviceSlices";
 
@@ -28,6 +28,9 @@ function ServicesSection() {
   const [description, setDescription] = useState<string>("");
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [deletedService, setDeletedService] = useState<string>("");
 
   const handleOpenImages = () => {
     fileInputRef?.current?.click();
@@ -101,6 +104,24 @@ function ServicesSection() {
       });
   };
 
+  const handleDeleteService = () => {
+    setIsDeleting(true);
+
+    removeService(deletedService)
+      .catch((error) => {
+        console.log(error);
+        setIsDeleting(false);
+      })
+      .then(() => {
+        dispatch(serviceAction.removeService({ name: deletedService }));
+        setIsDeleting(false);
+        setIsOpenDeleteDialog(false);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
+
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
@@ -118,47 +139,58 @@ function ServicesSection() {
       <ul className={styles.ul}>
         {!services.length && <p>Hismat mavjud emas</p>}
         {services.map((service, index) => (
-          <li key={index} className={styles.li}>
-            <cite className={styles.cite}>
-              <p>{service.name}</p>
-              <sup>
-                <Tooltip title="O'zgartirish">
-                  <button
-                    className={styles.iconBtn}
-                    onClick={() => setIsOpenChangeDialog(true)}
-                  >
-                    <EditIcon color="primary" fontSize="small" />
-                  </button>
-                </Tooltip>
-              </sup>
-              <sup>
-                <Tooltip title="O'chirish">
-                  <button
-                    className={`${styles.iconBtn} text-red-500`}
-                    onClick={() => setIsOpenDeleteDialog(true)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </button>
-                </Tooltip>
-              </sup>
-            </cite>
+          <React.Fragment key={index}>
+            {isDeleting && service.name === deletedService ? (
+              <li className={styles.li}>
+                <SpinnerLoading />
+              </li>
+            ) : (
+              <li className={styles.li}>
+                <cite className={styles.cite}>
+                  <p>{service.name}</p>
+                  <sup>
+                    <Tooltip title="O'zgartirish">
+                      <button
+                        className={styles.iconBtn}
+                        onClick={() => setIsOpenChangeDialog(true)}
+                      >
+                        <EditIcon color="primary" fontSize="small" />
+                      </button>
+                    </Tooltip>
+                  </sup>
+                  <sup>
+                    <Tooltip title="O'chirish">
+                      <button
+                        className={`${styles.iconBtn} text-red-500`}
+                        onClick={() => {
+                          setIsOpenDeleteDialog(true);
+                          setDeletedService(service.name);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </button>
+                    </Tooltip>
+                  </sup>
+                </cite>
 
-            <nav className={styles.nav}>
-              <picture className={styles.images}>
-                {service.images.map((image, index) => (
-                  <img
-                    key={index}
-                    className={styles.image}
-                    src={image}
-                    alt=""
-                  />
-                ))}
-              </picture>
-              <article className={styles.article}>
-                {service.description}
-              </article>
-            </nav>
-          </li>
+                <nav className={styles.nav}>
+                  <picture className={styles.images}>
+                    {service.images.map((image, index) => (
+                      <img
+                        key={index}
+                        className={styles.image}
+                        src={image}
+                        alt=""
+                      />
+                    ))}
+                  </picture>
+                  <article className={styles.article}>
+                    {service.description}
+                  </article>
+                </nav>
+              </li>
+            )}
+          </React.Fragment>
         ))}
       </ul>
 
@@ -172,6 +204,7 @@ function ServicesSection() {
       <Dialog
         isOpenDialog={isOpenDeleteDialog}
         setIsOpenDialog={setIsOpenDeleteDialog}
+        handleYes={handleDeleteService}
       >
         Rostanham o'chirishni istaysizmi?
       </Dialog>
