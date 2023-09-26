@@ -21,7 +21,7 @@ function SpinnerLoading(props: SpinnerLoadingProps) {
 export default SpinnerLoading;
 
 const styles = {
-  spinners: "w-[100px] h-[100px] relative bg-slate-200",
+  spinners: "w-[100px] h-[100px] relative",
   spinner:
     "box-border absolute w-full h-full border-solid border-transparent border-8 rounded-full",
   bottom: "border-t-gray-900  animate-spinner-one",

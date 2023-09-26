@@ -49,7 +49,6 @@ export const addTelNumber = async (number: string) => {
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
-      return null;
     }
   } catch (err) {
     console.log("Error while adding number: ", err);

@@ -9,8 +9,6 @@ export type Address_Type = {
   url: string;
 };
 
-export type SERVICES = string[];
-
 export type CARS = string[];
 
 export type Service_Type = {

@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "../Dialog";
 import Modal from "../Modal";
 import Input from "../Input";
-import { typeText } from "../../unils/functions/typeText";
 import { addAddress, deleteAddress } from "../../firebase/functions/info";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { infoActions } from "../../store/features/infoSlices";
