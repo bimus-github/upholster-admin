@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import info from "./features/infoSlices";
+import service from "./features/serviceSlices";
 // ...
 
 export const store = configureStore({
   reducer: {
     info,
+    service,
   },
 });
 
