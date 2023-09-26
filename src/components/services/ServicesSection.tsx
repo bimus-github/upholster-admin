@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -7,33 +7,98 @@ import { Tooltip } from "@mui/material";
 import Modal from "../Modal";
 import Input from "../Input";
 import Dialog from "../Dialog";
-import { typeText } from "../../unils/functions/typeText";
-
-const garageImage =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQMyuehKGonIes74bz4xrGZW8EGBqgWq7V7Yg&usqp=CAU";
-
-const image2 =
-  "https://www.tearmender.com/content/files/Tear%20Mender%20Web/Images/Blog%20Images/4_Sanding%20it%20down.jpg";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase";
+import SpinnerLoading from "../loading/SpinnerLoading";
+import { addService } from "../../firebase/functions/service";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { serviceAction } from "../../store/features/serviceSlices";
 
 function ServicesSection() {
+  const dispatch = useAppDispatch();
+  const services = useAppSelector((state) => state.service);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const descriptionRef = useRef<HTMLTextAreaElement>(null);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [isOpenChangeDialog, setIsOpenChangeDialog] = useState<boolean>(false);
   const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState<boolean>(false);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
-  useEffect(() => {
-    typeText(descriptionRef, 10);
-  }, []);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [serviceName, setServiceName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleOpenImages = () => {
     fileInputRef?.current?.click();
   };
 
   const onAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
     const file = e.target.files?.[0];
-    console.log(file);
+
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    const storageRef = ref(storage, "images/" + file.name);
+
+    uploadBytes(storageRef, file)
+      .then((snapshot) => {
+        console.log("Uploaded a file!");
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsUploadingImage(false);
+      })
+      .finally(() => {
+        getDownloadURL(storageRef)
+          .then((url) => {
+            setSelectedImages((prev) => [...prev, url]);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsUploadingImage(false);
+          })
+          .finally(() => {
+            setIsUploadingImage(false);
+          });
+      });
+  };
+
+  const handleAddService = () => {
+    if (!serviceName) return;
+    if (!description) return;
+
+    setIsSaving(true);
+
+    addService({
+      name: serviceName,
+      description: description,
+      images: selectedImages,
+    })
+      .catch((error) => {
+        setIsSaving(false);
+      })
+      .then(() => {
+        dispatch(
+          serviceAction.addService({
+            name: serviceName,
+            description: description,
+            images: selectedImages,
+          })
+        );
+
+        setIsOpenModal(false);
+        setIsOpenChangeDialog(false);
+        setIsOpenDeleteDialog(false);
+        setIsSaving(false);
+      })
+      .finally(() => {
+        setIsSaving(false);
+        setSelectedImages([]);
+        setServiceName("");
+        setDescription("");
+      });
   };
 
   return (
@@ -51,45 +116,50 @@ function ServicesSection() {
       </legend>
 
       <ul className={styles.ul}>
-        <li className={styles.li}>
-          <cite className={styles.cite}>
-            <p>Servise name</p>
-            <sup>
-              <Tooltip title="O'zgartirish">
-                <button
-                  className={styles.iconBtn}
-                  onClick={() => setIsOpenChangeDialog(true)}
-                >
-                  <EditIcon color="primary" fontSize="small" />
-                </button>
-              </Tooltip>
-            </sup>
-            <sup>
-              <Tooltip title="O'chirish">
-                <button
-                  className={`${styles.iconBtn} text-red-500`}
-                  onClick={() => setIsOpenDeleteDialog(true)}
-                >
-                  <DeleteIcon fontSize="small" />
-                </button>
-              </Tooltip>
-            </sup>
-          </cite>
+        {!services.length && <p>Hismat mavjud emas</p>}
+        {services.map((service, index) => (
+          <li key={index} className={styles.li}>
+            <cite className={styles.cite}>
+              <p>{service.name}</p>
+              <sup>
+                <Tooltip title="O'zgartirish">
+                  <button
+                    className={styles.iconBtn}
+                    onClick={() => setIsOpenChangeDialog(true)}
+                  >
+                    <EditIcon color="primary" fontSize="small" />
+                  </button>
+                </Tooltip>
+              </sup>
+              <sup>
+                <Tooltip title="O'chirish">
+                  <button
+                    className={`${styles.iconBtn} text-red-500`}
+                    onClick={() => setIsOpenDeleteDialog(true)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </button>
+                </Tooltip>
+              </sup>
+            </cite>
 
-          <nav className={styles.nav}>
-            <picture className={styles.images}>
-              <img className={styles.image} src={garageImage} alt="" />
-              <img className={styles.image} src={garageImage} alt="" />
-              <img className={styles.image} src={garageImage} alt="" />
-            </picture>
-            <article ref={descriptionRef} className={styles.article}>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book.
-            </article>
-          </nav>
-        </li>
+            <nav className={styles.nav}>
+              <picture className={styles.images}>
+                {service.images.map((image, index) => (
+                  <img
+                    key={index}
+                    className={styles.image}
+                    src={image}
+                    alt=""
+                  />
+                ))}
+              </picture>
+              <article className={styles.article}>
+                {service.description}
+              </article>
+            </nav>
+          </li>
+        ))}
       </ul>
 
       <Dialog
@@ -106,14 +176,31 @@ function ServicesSection() {
         Rostanham o'chirishni istaysizmi?
       </Dialog>
 
-      <Modal isOpenModal={isOpenModal} setIsOpenModal={setIsOpenModal}>
-        <form action="" className="flex flex-col gap-3">
-          <Input placeholder="m.u: Oynalarni qoraytirish" title="Sizmat turi" />
+      <Modal
+        isOpenModal={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+        isSaving={isSaving}
+        handleYes={handleAddService}
+        handeClear={() => {
+          setServiceName("");
+          setDescription("");
+          setSelectedImages([]);
+        }}
+      >
+        <div className="flex flex-col gap-3">
           <Input
-            placeholder="Bu hizmatga aloqodor qisqacha ma'lumot, masalan: hizmat narxi, ketadigan vaqt, ... "
+            placeholder="m.u: Oynalarni qoraytirish"
+            title="Sizmat turi"
+            value={serviceName}
+            setValue={setServiceName}
+          />
+          <Input
+            placeholder="Bu xizmatga aloqodor qisqacha ma'lumot, masalan: xizmat narxi, ketadigan vaqt, ... "
             title="Qisqacha ma'lumot"
             isTextArea
             height="h-[200px]"
+            value={description}
+            setValue={setDescription}
           />
 
           <span className={styles.span}>
@@ -127,18 +214,27 @@ function ServicesSection() {
               accept="image/*"
             />
             <button onClick={handleOpenImages} className={styles.iconBtn}>
-              <Tooltip title="Rasm qo'shish">
-                <AddCircleIcon color="primary" fontSize="large" />
-              </Tooltip>
+              {isUploadingImage ? (
+                <SpinnerLoading scale={0.4} />
+              ) : (
+                <Tooltip title="Rasm qo'shish">
+                  <AddCircleIcon color="primary" fontSize="large" />
+                </Tooltip>
+              )}
             </button>
 
             <picture className={styles.selectedImages}>
-              <img src={garageImage} alt="" className={styles.selectedImage} />
-              <img src={image2} alt="" className={styles.selectedImage} />
-              <img src={garageImage} alt="" className={styles.selectedImage} />
+              {selectedImages.map((image, index) => (
+                <div
+                  key={index}
+                  className="w-[100px] h-[100px] relative overflow-hidden rounded-md"
+                >
+                  <img src={image} alt="" className={styles.selectedImage} />
+                </div>
+              ))}
             </picture>
           </span>
-        </form>
+        </div>
       </Modal>
     </fieldset>
   );
@@ -157,12 +253,12 @@ const styles = {
   li:
     "w-full p-2 bg-slate-200 rounded-md drop-shadow-md justify-between cursor-pointer flex flex-col",
   nav: "w-full min-h-[200px] flex justify-around p-4 sm:p-1 gap-5 md:flex-col",
-  images: "w-1/2 md:w-full overflow-y-scroll flex gap-2 rounded-md",
+  images: "w-1/2 md:w-full overflow-y-scroll flex gap-2 rounded-md h-[250px]",
   image: " h-[100%] rounded-xl  sm:rounded-md ",
   article:
     " w-1/2 md:w-full p-3 text-justify h-[100%] bg-slate-100 rounded-md sm:text-[12px]",
 
-  span: " flex gap-3 items-center w-full",
+  span: " flex gap-3 items-center w-full ",
   selectedImages: "w-full overflow-y-scroll flex gap-2 rounded-md",
-  selectedImage: "rounded-xl h-full",
+  selectedImage: "absolute h-full",
 };
