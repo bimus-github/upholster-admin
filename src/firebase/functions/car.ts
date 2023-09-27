@@ -104,12 +104,12 @@ export const addServiceToCar = async ({
 
 export const updateBeforeImage = async ({
   carName,
-  serviseName,
+  serviceName,
   beforeImage,
   itemId,
 }: {
   carName: string;
-  serviseName: string;
+  serviceName: string;
   beforeImage: string;
   itemId: string;
 }) => {
@@ -122,12 +122,12 @@ export const updateBeforeImage = async ({
       const services = docSnap.data().services as Car_Service_Type[];
 
       // find the service in the car
-      const foundService = services.find((item) => item.name === serviseName);
+      const foundService = services.find((item) => item.name === serviceName);
 
       if (foundService) {
         // update before image of the item
         const updatedServices = services.map(({ name, items }) => {
-          if (name === serviseName) {
+          if (name === serviceName) {
             return {
               name,
               items: items.map((item) => {
@@ -160,12 +160,12 @@ export const updateBeforeImage = async ({
 
 export const updateThenImage = async ({
   carName,
-  serviseName,
+  serviceName,
   thenImage,
   itemId,
 }: {
   carName: string;
-  serviseName: string;
+  serviceName: string;
   thenImage: string;
   itemId: string;
 }) => {
@@ -179,12 +179,12 @@ export const updateThenImage = async ({
 
       // find the service in the car
 
-      const foundService = services.find((item) => item.name === serviseName);
+      const foundService = services.find((item) => item.name === serviceName);
 
       if (foundService) {
         // update then image of the item
         const updatedServices = services.map(({ name, items }) => {
-          if (name === serviseName) {
+          if (name === serviceName) {
             return {
               name,
               items: items.map((item) => {
@@ -217,12 +217,12 @@ export const updateThenImage = async ({
 
 export const updateDescription = async ({
   carName,
-  serviseName,
+  serviceName,
   description,
   itemId,
 }: {
   carName: string;
-  serviseName: string;
+  serviceName: string;
   description: string;
   itemId: string;
 }) => {
@@ -235,12 +235,12 @@ export const updateDescription = async ({
       const services = docSnap.data().services as Car_Service_Type[];
 
       // find the service in the car
-      const foundService = services.find((item) => item.name === serviseName);
+      const foundService = services.find((item) => item.name === serviceName);
 
       if (foundService) {
         // update description of the item
         const updatedServices = services.map(({ name, items }) => {
-          if (name === serviseName) {
+          if (name === serviceName) {
             return {
               name,
               items: items.map((item) => {
@@ -275,12 +275,12 @@ export const updateDescription = async ({
 
 export const updatePrice = async ({
   carName,
-  serviseName,
+  serviceName,
   price,
   itemId,
 }: {
   carName: string;
-  serviseName: string;
+  serviceName: string;
   price: string;
   itemId: string;
 }) => {
@@ -293,12 +293,12 @@ export const updatePrice = async ({
       const services = docSnap.data().services as Car_Service_Type[];
 
       // find the service in the car
-      const foundService = services.find((item) => item.name === serviseName);
+      const foundService = services.find((item) => item.name === serviceName);
 
       if (foundService) {
         // update price of the item
         const updatedServices = services.map(({ name, items }) => {
-          if (name === serviseName) {
+          if (name === serviceName) {
             return {
               name,
               items: items.map((item) => {
@@ -333,11 +333,11 @@ export const updatePrice = async ({
 
 export const deleteItem = async ({
   carName,
-  serviseName,
+  serviceName,
   itemId,
 }: {
   carName: string;
-  serviseName: string;
+  serviceName: string;
   itemId: string;
 }) => {
   try {
@@ -350,12 +350,12 @@ export const deleteItem = async ({
 
       // find the service in the car
 
-      const foundService = services.find((item) => item.name === serviseName);
+      const foundService = services.find((item) => item.name === serviceName);
 
       if (foundService) {
         // delete the item
         const updatedServices = services.map(({ name, items }) => {
-          if (name === serviseName) {
+          if (name === serviceName) {
             return {
               name,
               items: items.filter((item) => item.id !== itemId),
