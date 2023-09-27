@@ -28,6 +28,7 @@ export type Car_Service_Type = {
   items: {
     price: string;
     before: string;
+    description: string;
     then: string;
   }[];
 };
