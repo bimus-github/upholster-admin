@@ -1,25 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Params, useNavigate, useParams } from "react-router-dom";
 import { typeText } from "../../unils/functions/typeText";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Tooltip } from "@mui/material";
-
-const damas =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ732b4s6iTlVg2XPePnCRawVLejqsiEy4Ge7HTL7hqhg&s";
+import Dialog from "../Dialog";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import Modal from "../Modal";
+import Input from "../Input";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase";
+import { addServiceToCar } from "../../firebase/functions/car";
+import { carActions } from "../../store/features/carSlices";
 
 function Car() {
   const navigate = useNavigate();
-  const carNameRef = React.useRef<HTMLElement>(null);
-  const textRef = React.useRef<HTMLParagraphElement>(null);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const carNameRef = useRef<HTMLElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const beforeImageRef = useRef<HTMLInputElement>(null);
+  const thenImageRef = useRef<HTMLInputElement>(null);
   const { id }: Readonly<Params<string>> = useParams();
-  console.log(id);
+
+  const dispatch = useAppDispatch();
+  const cars = useAppSelector((state) => state.cars);
+  const services = useAppSelector((state) => state.service);
+
+  const car = cars.find((item) => item.name === id);
+
+  const [isDialogAddImageOpen, setIsDialogAddImageOpen] = useState<boolean>(
+    false
+  );
+  const [isDialogEditDescription, setIsDialogEditDescription] = useState<
+    boolean
+  >(false);
+  const [isDialogDeleteImage, setIsDialogDeleteImage] = useState<boolean>(
+    false
+  );
+  const [isDialogEditPrice, setIsDialogEditPrice] = useState<boolean>(false);
+  const [isAddCarServiceMoadlOpen, setIsAddCarServiceMoadlOpen] = useState<
+    boolean
+  >(false);
+  const [isLoadingBeforeImage, setIsLoadingBeforeImage] = useState<boolean>(
+    false
+  );
+  const [isLoadingThenImage, setIsLoadingThenImage] = useState<boolean>(false);
+  const [isSavingNewItem, setIsSavingNewItem] = useState<boolean>(false);
+
+  const [selectedService, setSelectedService] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [beforeImage, setBeforeImage] = useState<string>("");
+  const [thenImage, setThenImage] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+
+  const isServiceHave = services.find((item) => item.name === selectedService);
+
+  const carService = car?.services.find(
+    (item) => item.name === selectedService
+  );
 
   useEffect(() => {
     typeText(carNameRef);
-    typeText(textRef, 10);
   }, []);
   const handleBackgroundClick = (
     event: React.MouseEvent<HTMLDialogElement>
@@ -30,13 +71,99 @@ function Car() {
     }
   };
 
-  const onAddImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectBeforeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    console.log(file);
+
+    if (!file) return;
+
+    setIsLoadingBeforeImage(true);
+
+    const storageRef = ref(storage, "images/" + file.name);
+
+    uploadBytes(storageRef, file)
+      .then((snapshot) => {
+        console.log("Uploaded a file!");
+        getDownloadURL(storageRef).then((url) => {
+          setBeforeImage(url);
+        });
+      })
+      .finally(() => {
+        setIsLoadingBeforeImage(false);
+      });
   };
 
-  const handleOpenImage = () => {
-    fileInputRef?.current?.click();
+  const handleSelectThenImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setIsLoadingThenImage(true);
+
+    const storageRef = ref(storage, "images/" + file.name);
+
+    uploadBytes(storageRef, file)
+      .then((snapshot) => {
+        console.log("Uploaded a file!");
+        getDownloadURL(storageRef).then((url) => {
+          setThenImage(url);
+        });
+      })
+      .finally(() => {
+        setIsLoadingThenImage(false);
+      });
+  };
+
+  const handleSaveNewItem = () => {
+    if (
+      !selectedService.length ||
+      !price.length ||
+      !beforeImage.length ||
+      !thenImage.length
+    )
+      return;
+
+    setIsSavingNewItem(true);
+
+    addServiceToCar({
+      name: id!,
+      service: {
+        name: selectedService,
+        items: [
+          {
+            price: price,
+            before: beforeImage,
+            description: description,
+            then: thenImage,
+          },
+        ],
+      },
+    })
+      .then(() => {
+        dispatch(
+          carActions.addServiceToCar({
+            name: id!,
+            service: {
+              name: selectedService,
+              items: [
+                {
+                  price: price,
+                  before: beforeImage,
+                  description: description,
+                  then: thenImage,
+                },
+              ],
+            },
+          })
+        );
+      })
+      .finally(() => {
+        setIsSavingNewItem(false);
+        setBeforeImage("");
+        setThenImage("");
+        setPrice("");
+        setDescription("");
+        setIsAddCarServiceMoadlOpen(false);
+      });
   };
 
   return (
@@ -47,10 +174,10 @@ function Car() {
       <main className={styles.main}>
         <header className={styles.head}>
           <picture className={styles.picture}>
-            <img className={styles.image} src={damas} alt="" />
+            <img className={styles.image} src={car?.image} alt="" />
           </picture>
           <strong className={styles.strong} ref={carNameRef}>
-            Damas
+            {car?.name}
           </strong>
         </header>
 
@@ -62,69 +189,191 @@ function Car() {
             className={styles.input}
             type="text"
             list="xizmat_turlari"
-            defaultValue={"1"}
+            value={selectedService}
+            onChange={(e) => setSelectedService(e.target.value)}
           />
           <datalist id="xizmat_turlari">
-            <option value="1" />
-            <option value="2" />
-            <option value="3" />
+            {services.map((item) => (
+              <option key={item.name} value={item.name} />
+            ))}
           </datalist>
         </fieldset>
 
         <main className={styles.services}>
-          <div className={styles.title}>
-            <p className={styles.titleP}>Xizmat Turi</p>
-            <Tooltip title="Qo'shish">
-              <button className={styles.iconBtn}>
-                <AddCircleIcon />
-              </button>
-            </Tooltip>
-          </div>
+          {isServiceHave ? (
+            <React.Fragment>
+              <div className={styles.title}>
+                <p className={styles.titleP}>{selectedService}</p>
+                <Tooltip title="Qo'shish">
+                  <button
+                    className={styles.iconBtn}
+                    onClick={() => setIsAddCarServiceMoadlOpen(true)}
+                  >
+                    <AddCircleIcon />
+                  </button>
+                </Tooltip>
+              </div>
 
-          <ul className={styles.ul}>
-            <li className={styles.li}>
-              <picture className={styles.pictures}>
-                <picture className="h-full min-w-[200px] relative">
-                  <img src={damas} alt="" className="h-full w-full absolute" />
-                  <Tooltip title="O'chirish">
-                    <button
-                      className={`${styles.iconBtn} text-red-500 absolute right-2 bottom-2`}
-                    >
-                      <DeleteIcon />
-                    </button>
-                  </Tooltip>
-                </picture>
-                <span className="h-full p-2 flex justify-center">
-                  <input
-                    type="file"
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={onAddImage}
-                  />
-                  <Tooltip title="Qo'shish">
-                    <button
-                      className={styles.iconBtn}
-                      onClick={handleOpenImage}
-                    >
-                      <AddCircleIcon />
-                    </button>
-                  </Tooltip>
-                </span>
-              </picture>
-              <article className={styles.article}>
-                <p ref={textRef} className="text-justify w-full">
-                  Lorem ipsum dolor, sit amet consectetur adipisicing elit. Odio
-                  officiis facere exercitationem. Voluptatibus dolor officiis
-                  vero quo corrupti! Laborum sapiente cupiditate temporibus
-                  accusantium cum. Doloribus molestias esse laborum maxime
-                  accusantium.
-                </p>
-                <button className={styles.btn}>200$</button>
-              </article>
-            </li>
-          </ul>
+              <ul className={styles.ul}>
+                {!carService && (
+                  <p>Hali bu hazmat turiga oid malumollar yuborilmadi!</p>
+                )}
+                {carService?.items.map((item, index) => (
+                  <li className={styles.li} key={index}>
+                    <picture className={styles.pictures}>
+                      <picture className="h-full min-w-[200px] relative">
+                        <img
+                          src={item.before}
+                          alt=""
+                          className="h-full w-full absolute"
+                        />
+                        <Tooltip title="O'chirish">
+                          <button
+                            className={`${styles.iconBtn} text-red-500 absolute right-2 bottom-2`}
+                          >
+                            <DeleteIcon />
+                          </button>
+                        </Tooltip>
+                      </picture>
+                      <picture className="h-full min-w-[200px] relative">
+                        <img
+                          src={item.then}
+                          alt=""
+                          className="h-full w-full absolute"
+                        />
+                        <Tooltip title="O'chirish">
+                          <button
+                            className={`${styles.iconBtn} text-red-500 absolute right-2 bottom-2`}
+                          >
+                            <DeleteIcon />
+                          </button>
+                        </Tooltip>
+                      </picture>
+                    </picture>
+                    <article className={styles.article}>
+                      <p ref={textRef} className="text-justify w-full">
+                        {item.description}
+                      </p>
+                      <button className={styles.btn}>{item.price}</button>
+                    </article>
+                  </li>
+                ))}
+              </ul>
+            </React.Fragment>
+          ) : (
+            <> Hali xizmat turi tanlanmadi</>
+          )}
         </main>
       </main>
+
+      {/* Modals */}
+      <Modal
+        isOpenModal={isAddCarServiceMoadlOpen}
+        setIsOpenModal={setIsAddCarServiceMoadlOpen}
+        handeClear={() => {
+          setSelectedService("");
+          setPrice("");
+          setDescription("");
+          setBeforeImage("");
+          setThenImage("");
+        }}
+        isSaving={isSavingNewItem}
+        handleYes={handleSaveNewItem}
+      >
+        <div className={modalstyles.main}>
+          <picture className={modalstyles.picture}>
+            <section className={modalstyles.section}>
+              <input
+                type="file"
+                className="hidden"
+                ref={beforeImageRef}
+                accept="image/*"
+                onChange={handleSelectBeforeImage}
+              />
+              <button
+                className={modalstyles.btn}
+                onClick={() => beforeImageRef.current?.click()}
+              >
+                {isLoadingBeforeImage ? (
+                  <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                ) : (
+                  "Dastlabki"
+                )}
+              </button>
+              {beforeImage.length !== 0 && (
+                <img className={modalstyles.img} src={beforeImage} alt="" />
+              )}
+            </section>
+            <section className={modalstyles.section}>
+              <input
+                type="file"
+                className="hidden"
+                ref={thenImageRef}
+                accept="image/*"
+                onChange={handleSelectThenImage}
+              />
+              <button
+                className={modalstyles.btn}
+                onClick={() => thenImageRef.current?.click()}
+              >
+                {isLoadingThenImage ? (
+                  <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                ) : (
+                  "Natija"
+                )}
+              </button>
+              {thenImage.length !== 0 && (
+                <img className={modalstyles.img} src={thenImage} alt="" />
+              )}
+            </section>
+          </picture>
+          <Input
+            setValue={setPrice}
+            type="text"
+            value={price}
+            placeholder="m.u: 200$"
+            title="Narx"
+          />
+          <Input
+            isTextArea
+            height="300px"
+            setValue={setDescription}
+            type="text"
+            value={description}
+            placeholder="Shu service bo'yicha ma'lumot"
+            title="Ma'lumot"
+          />
+        </div>
+      </Modal>
+
+      {/* Dialogs */}
+      <Dialog
+        isOpenDialog={isDialogAddImageOpen}
+        setIsOpenDialog={setIsDialogAddImageOpen}
+      >
+        Rostanham rasm qo'shmoqchimisiz?
+      </Dialog>
+
+      <Dialog
+        isOpenDialog={isDialogEditDescription}
+        setIsOpenDialog={setIsDialogEditDescription}
+      >
+        Rostanham ma'lumotni o'zgartirmoqchimisz?
+      </Dialog>
+
+      <Dialog
+        isOpenDialog={isDialogDeleteImage}
+        setIsOpenDialog={setIsDialogDeleteImage}
+      >
+        Rostanham rasmni o'chirmoqchimisiz?
+      </Dialog>
+
+      <Dialog
+        isOpenDialog={isDialogEditPrice}
+        setIsOpenDialog={setIsDialogEditPrice}
+      >
+        Rostanham narxni o'zgartirmoqchimisz?
+      </Dialog>
     </dialog>
   );
 }
@@ -138,11 +387,12 @@ const styles = {
     "animate-ping-one-time min-w-[400px] md:min-w-[350px] sm:min-w-[300px] min-h-[200px] bg-white drop-shadow-2xl rounded-lg p-5 flex flex-col gap-4 items-start justify-start",
 
   head: "flex relative gap-2 items-center",
-  picture: "relative h-[50px] w-[50px]  rounded-full overflow-hidden",
-  image: "w-full h-full absolute",
+  picture:
+    "relative h-[50px] w-[50px]  rounded-full overflow-hidden flex justify-center items-center",
+  image: " h-full absolute",
   strong: "",
 
-  fieldset: "border border-black p-2 rounded-md mx-auto w-[300px]",
+  fieldset: "border border-black p-2 rounded-md mx-auto w-[300px] flex",
   legend: "",
   cite: "text-sky-500 font-semibold",
   input: "w-full p-2 focus:outline-none",
@@ -160,4 +410,12 @@ const styles = {
   serviceImage: "h-full rounded-md",
   article: "w-full md:w-full flex flex-col justify-between gap-2",
   btn: "w-[300px] md:w-full mx-auto rounded-md bg-sky-400 hover:bg-sky-300 p-2",
+};
+
+const modalstyles = {
+  main: " flex flex-col gap-4 items-center",
+  picture: "flex w-full gap-2",
+  section: "w-1/2 flex flex-col gap-2",
+  btn: "w-full mx-auto rounded-md bg-sky-400 hover:bg-sky-300 p-2",
+  img: "h-[200px] rounded-md",
 };
