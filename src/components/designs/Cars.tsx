@@ -124,7 +124,7 @@ function Cars() {
                 </button>
               </Tooltip>
               {isDeleting && car.name === deletedCar ? (
-                <div className="inline-block w-8 h-8 border-t-4 border-black rounded-full" />
+                <div className=" animate-spin inline-block w-8 h-8 border-t-4 border-black rounded-full" />
               ) : (
                 <Tooltip title="O'chirish">
                   <button
