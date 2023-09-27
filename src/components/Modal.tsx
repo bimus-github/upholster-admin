@@ -43,10 +43,11 @@ function Modal(props: ModalProps) {
             }}
             className={styles.btn + " " + styles.btnSave}
           >
-            {isSaving && (
-              <div className="w-6 h-6 border-transparent border-t-black border-2 rounded-full animate-spin" />
+            {isSaving ? (
+              <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+            ) : (
+              "Saqlash"
             )}
-            Saqlash
           </button>
           <button
             onClick={() => {
