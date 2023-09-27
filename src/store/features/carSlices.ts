@@ -54,29 +54,205 @@ export const carSlices = createSlice({
         state[index].services.push(action.payload.service);
       }
     },
-    updateServiceByCar: (
+    updateBeforeImage(
       state,
-      action: { payload: { name: string; service: Car_Service_Type } }
-    ) => {
+      action: {
+        payload: {
+          carName: string;
+          serviceName: string;
+          beforeImage: string;
+          itemId: string;
+        };
+      }
+    ) {
+      // getting index of car
       const index = state.findIndex(
-        (item) => item.name === action.payload.name
+        (item) => item.name === action.payload.carName
       );
-      state[index].services = state[index].services.map((item) => {
-        if (item.name === action.payload.service.name) {
-          return action.payload.service;
-        } else {
-          return item;
-        }
-      });
+
+      const services = state[index].services;
+
+      // find the service in the car
+      const foundService = services.find(
+        (item) => item.name === action.payload.serviceName
+      );
+
+      if (foundService) {
+        // updating the before image of item in the services
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === action.payload.serviceName) {
+            return {
+              name,
+              items: items.map((item) => {
+                if (item.id === action.payload.itemId) {
+                  return {
+                    ...item,
+                    beforeImage: action.payload.beforeImage,
+                  };
+                } else {
+                  return item;
+                }
+              }),
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        state[index].services = updatedServices;
+      } else {
+        return state;
+      }
     },
-    removeServiceByCar: (
+    updateThenImfer(
       state,
-      action: { payload: { name: string; serviceName: string } }
-    ) => {
-      const filteredData = state.filter(
-        (item) => item.name !== action.payload.name
+      action: {
+        payload: {
+          carName: string;
+          serviceName: string;
+          thenImage: string;
+          itemId: string;
+        };
+      }
+    ) {
+      // getting index of car
+      const index = state.findIndex(
+        (item) => item.name === action.payload.carName
       );
-      return filteredData;
+
+      const services = state[index].services;
+
+      // find the service in the car
+      const foundService = services.find(
+        (item) => item.name === action.payload.serviceName
+      );
+
+      if (foundService) {
+        // updating the then image of item in the services
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === action.payload.serviceName) {
+            return {
+              name,
+              items: items.map((item) => {
+                if (item.id === action.payload.itemId) {
+                  return {
+                    ...item,
+                    thenImage: action.payload.thenImage,
+                  };
+                } else {
+                  return item;
+                }
+              }),
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        state[index].services = updatedServices;
+      } else {
+        return state;
+      }
+    },
+    updateDescription(
+      state,
+      action: {
+        payload: {
+          carName: string;
+          serviceName: string;
+          description: string;
+          itemId: string;
+        };
+      }
+    ) {
+      // getting index of car
+      const index = state.findIndex(
+        (item) => item.name === action.payload.carName
+      );
+
+      const services = state[index].services;
+
+      // find the service in the car
+      const foundService = services.find(
+        (item) => item.name === action.payload.serviceName
+      );
+
+      if (foundService) {
+        // updating the description of item in the services
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === action.payload.serviceName) {
+            return {
+              name,
+              items: items.map((item) => {
+                if (item.id === action.payload.itemId) {
+                  return {
+                    ...item,
+                    description: action.payload.description,
+                  };
+                } else {
+                  return item;
+                }
+              }),
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        state[index].services = updatedServices;
+      } else {
+        return state;
+      }
+    },
+    updatePrice(
+      state,
+      action: {
+        payload: {
+          carName: string;
+          serviceName: string;
+          price: string;
+          itemId: string;
+        };
+      }
+    ) {
+      // getting index of car
+      const index = state.findIndex(
+        (item) => item.name === action.payload.carName
+      );
+
+      const services = state[index].services;
+
+      // find the service in the car
+      const foundService = services.find(
+        (item) => item.name === action.payload.serviceName
+      );
+
+      if (foundService) {
+        // updating the price of item in the services
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === action.payload.serviceName) {
+            return {
+              name,
+              items: items.map((item) => {
+                if (item.id === action.payload.itemId) {
+                  return {
+                    ...item,
+                    price: action.payload.price,
+                  };
+                } else {
+                  return item;
+                }
+              }),
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        state[index].services = updatedServices;
+      } else {
+        return state;
+      }
     },
   },
 });
