@@ -78,10 +78,10 @@ function Navbar() {
               "text-sky-600 scale-125 animate-pulse"}`}
           >
             <p className={`${styles.p} ${isClosedSideBar && "opacity-0"}`}>
-              HIZMATLAR
+              XIZMATLAR
             </p>
             {isClosedSideBar && (
-              <Tooltip title="Hizmatlar">
+              <Tooltip title="Xizmatlar">
                 <MiscellaneousServicesIcon className="absolute" />
               </Tooltip>
             )}

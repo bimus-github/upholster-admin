@@ -56,15 +56,15 @@ function Car() {
 
         <fieldset className={styles.fieldset}>
           <legend className={styles.legend}>
-            <cite className={styles.cite}>Hizmat turi</cite>
+            <cite className={styles.cite}>Xizmat turi</cite>
           </legend>
           <input
             className={styles.input}
             type="text"
-            list="hizmat_turlari"
+            list="xizmat_turlari"
             defaultValue={"1"}
           />
-          <datalist id="hizmat_turlari">
+          <datalist id="xizmat_turlari">
             <option value="1" />
             <option value="2" />
             <option value="3" />
@@ -73,7 +73,7 @@ function Car() {
 
         <main className={styles.services}>
           <div className={styles.title}>
-            <p className={styles.titleP}>Hizmat Turi</p>
+            <p className={styles.titleP}>Xizmat Turi</p>
             <Tooltip title="Qo'shish">
               <button className={styles.iconBtn}>
                 <AddCircleIcon />

@@ -125,8 +125,8 @@ function ServicesSection() {
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
-        <cite className={styles.cite}>Hismat turlari</cite>
-        <Tooltip title="Hismat turni qo'shish">
+        <cite className={styles.cite}>Xizmat turlari</cite>
+        <Tooltip title="Xizmat turni qo'shish">
           <button
             className={styles.iconBtn}
             onClick={() => setIsOpenModal(true)}
@@ -137,7 +137,7 @@ function ServicesSection() {
       </legend>
 
       <ul className={styles.ul}>
-        {!services.length && <p>Hismat mavjud emas</p>}
+        {!services.length && <p>Xizmat mavjud emas</p>}
         {services.map((service, index) => (
           <React.Fragment key={index}>
             {isDeleting && service.name === deletedService ? (
