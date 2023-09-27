@@ -24,10 +24,35 @@ export const carSlices = createSlice({
       state,
       action: { payload: { name: string; service: Car_Service_Type } }
     ) => {
+      // getting index of car
       const index = state.findIndex(
         (item) => item.name === action.payload.name
       );
-      state[index].services.push(action.payload.service);
+
+      const services = state[index].services;
+
+      // find the service in the car
+      const foundService = services.find(
+        (item) => item.name === action.payload.service.name
+      );
+
+      if (foundService) {
+        // updating the service from the car
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === action.payload.service.name) {
+            return {
+              name,
+              items: [...items, action.payload.service.items[0]],
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        state[index].services = updatedServices;
+      } else {
+        state[index].services.push(action.payload.service);
+      }
     },
     updateServiceByCar: (
       state,
