@@ -67,8 +67,31 @@ export const addServiceToCar = async ({
     if (docSnap.exists()) {
       const services = docSnap.data().services as Car_Service_Type[];
 
-      // adding the service to the car
-      services.push(service);
+      // find the service in the car
+      const foundService = services.find((item) => item.name === service.name);
+
+      if (foundService) {
+        // updating the service from the car
+        const updatedServices = services.map(({ name, items }) => {
+          if (name === service.name) {
+            return {
+              name,
+              items: [...items, service.items[0]],
+            } as Car_Service_Type;
+          } else {
+            return { name, items };
+          }
+        });
+
+        await updateDoc(docRef, {
+          services: updatedServices,
+        });
+      } else {
+        // adding the service to the car
+        await updateDoc(docRef, {
+          services: [...services, service],
+        });
+      }
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such car!");
