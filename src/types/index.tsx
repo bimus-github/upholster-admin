@@ -26,6 +26,7 @@ export type Car_Type = {
 export type Car_Service_Type = {
   name: string;
   items: {
+    id: string;
     price: string;
     before: string;
     description: string;
