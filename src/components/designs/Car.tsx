@@ -220,36 +220,80 @@ function Car() {
                 )}
                 {carService?.items.map((item, index) => (
                   <li className={styles.li} key={index}>
-                    <picture className={styles.pictures}>
-                      <picture className="h-full min-w-[200px] relative">
-                        <img
-                          src={item.before}
-                          alt=""
-                          className="h-full w-full absolute"
-                        />
-                        <Tooltip title="O'chirish">
-                          <button
-                            className={`${styles.iconBtn} text-red-500 absolute right-2 bottom-2`}
-                          >
-                            <DeleteIcon />
-                          </button>
-                        </Tooltip>
-                      </picture>
-                      <picture className="h-full min-w-[200px] relative">
-                        <img
-                          src={item.then}
-                          alt=""
-                          className="h-full w-full absolute"
-                        />
-                        <Tooltip title="O'chirish">
-                          <button
-                            className={`${styles.iconBtn} text-red-500 absolute right-2 bottom-2`}
-                          >
-                            <DeleteIcon />
-                          </button>
-                        </Tooltip>
-                      </picture>
-                    </picture>
+                    <span className={styles.view}>
+                      <section className={styles.imageSection}>
+                        {item.before.length === 0 ? (
+                          <React.Fragment>
+                            <button className={modalstyles.btn}>
+                              {isLoadingBeforeImage ? (
+                                <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                              ) : (
+                                "Dastlabki"
+                              )}
+                            </button>
+                            <input
+                              type="file"
+                              className="hidden"
+                              ref={beforeImageRef}
+                              onChange={handleSelectBeforeImage}
+                              accept="image/*"
+                            />
+                          </React.Fragment>
+                        ) : (
+                          <picture className="relative">
+                            <img
+                              src={item.before}
+                              alt=""
+                              className="h-[200px] rounded-md"
+                            />
+                            <Tooltip title="O'chirish">
+                              <button
+                                className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
+                                onClick={() => {}}
+                              >
+                                <DeleteIcon />
+                              </button>
+                            </Tooltip>
+                          </picture>
+                        )}
+                      </section>
+                      <section className={styles.imageSection}>
+                        {item.before.length === 0 ? (
+                          <React.Fragment>
+                            <button className={modalstyles.btn}>
+                              {isLoadingBeforeImage ? (
+                                <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                              ) : (
+                                "Dastlabki"
+                              )}
+                            </button>
+                            <input
+                              type="file"
+                              className="hidden"
+                              ref={thenImageRef}
+                              onChange={handleSelectThenImage}
+                              accept="image/*"
+                            />
+                          </React.Fragment>
+                        ) : (
+                          <picture className="relative">
+                            <img
+                              src={item.then}
+                              alt=""
+                              className="h-[200px] rounded-md"
+                            />
+                            <Tooltip title="O'chirish">
+                              <button
+                                className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
+                                onClick={() => {}}
+                              >
+                                <DeleteIcon />
+                              </button>
+                            </Tooltip>
+                          </picture>
+                        )}
+                      </section>
+                    </span>
                     <article className={styles.article}>
                       <p ref={textRef} className="text-justify w-full">
                         {item.description}
@@ -404,12 +448,12 @@ const styles = {
   iconBtn: "hover:bg-slate-100 p-2 rounded-full",
 
   ul: "flex flex-col gap-2 h-[350px] overflow-y-auto",
-  li: "flex md:flex-col gap-5 bg-slate-100 p-2 rounded-md drop-shadow-md ",
-  pictures:
-    "w-[400px] md:w-full h-[200px] overflow-x-auto flex gap-2 bg-slate-200",
-  serviceImage: "h-full rounded-md",
-  article: "w-full md:w-full flex flex-col justify-between gap-2",
+  li: "flex md:flex-col gap-3 bg-slate-100 p-2 rounded-md drop-shadow-md ",
+  article: "w-1/2 md:w-full flex flex-col justify-between gap-2",
   btn: "w-[300px] md:w-full mx-auto rounded-md bg-sky-400 hover:bg-sky-300 p-2",
+
+  view: "w-1/2 flex gap-2 overflow-y-auto",
+  imageSection: "w-1/2 flex justify-center items-center",
 };
 
 const modalstyles = {
