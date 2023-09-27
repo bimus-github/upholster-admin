@@ -124,18 +124,19 @@ function Car() {
 
     setIsSavingNewItem(true);
 
+    const newService = {
+      price: price,
+      before: beforeImage,
+      description: description,
+      then: thenImage,
+      id: Math.random().toString(),
+    };
+
     addServiceToCar({
       name: id!,
       service: {
         name: selectedService,
-        items: [
-          {
-            price: price,
-            before: beforeImage,
-            description: description,
-            then: thenImage,
-          },
-        ],
+        items: [newService],
       },
     })
       .then(() => {
@@ -144,14 +145,7 @@ function Car() {
             name: id!,
             service: {
               name: selectedService,
-              items: [
-                {
-                  price: price,
-                  before: beforeImage,
-                  description: description,
-                  then: thenImage,
-                },
-              ],
+              items: [newService],
             },
           })
         );
