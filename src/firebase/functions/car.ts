@@ -134,7 +134,7 @@ export const updateBeforeImage = async ({
                 if (item.id === itemId) {
                   return {
                     ...item,
-                    beforeImage,
+                    before: beforeImage,
                   };
                 } else {
                   return item;
@@ -191,7 +191,7 @@ export const updateThenImage = async ({
                 if (item.id === itemId) {
                   return {
                     ...item,
-                    thenImage,
+                    then: thenImage,
                   };
                 } else {
                   return item;

@@ -87,7 +87,7 @@ export const carSlices = createSlice({
                 if (item.id === action.payload.itemId) {
                   return {
                     ...item,
-                    beforeImage: action.payload.beforeImage,
+                    before: action.payload.beforeImage,
                   };
                 } else {
                   return item;
@@ -104,7 +104,7 @@ export const carSlices = createSlice({
         return state;
       }
     },
-    updateThenImfer(
+    updateThenImage(
       state,
       action: {
         payload: {
@@ -137,7 +137,7 @@ export const carSlices = createSlice({
                 if (item.id === action.payload.itemId) {
                   return {
                     ...item,
-                    thenImage: action.payload.thenImage,
+                    then: action.payload.thenImage,
                   };
                 } else {
                   return item;

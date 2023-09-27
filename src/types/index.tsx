@@ -25,11 +25,13 @@ export type Car_Type = {
 
 export type Car_Service_Type = {
   name: string;
-  items: {
-    id: string;
-    price: string;
-    before: string;
-    description: string;
-    then: string;
-  }[];
+  items: Item_Type[];
+};
+
+export type Item_Type = {
+  id: string;
+  price: string;
+  before: string;
+  description: string;
+  then: string;
 };

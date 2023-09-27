@@ -11,15 +11,22 @@ import Modal from "../Modal";
 import Input from "../Input";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
-import { addServiceToCar } from "../../firebase/functions/car";
+import {
+  addServiceToCar,
+  updateBeforeImage,
+  updateThenImage,
+} from "../../firebase/functions/car";
 import { carActions } from "../../store/features/carSlices";
+import { Item_Type } from "../../types";
 
 function Car() {
   const navigate = useNavigate();
   const carNameRef = useRef<HTMLElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const beforeImageRef = useRef<HTMLInputElement>(null);
+  const updateBeforeImageRef = useRef<HTMLInputElement>(null);
   const thenImageRef = useRef<HTMLInputElement>(null);
+  const updateThenImageRef = useRef<HTMLInputElement>(null);
   const { id }: Readonly<Params<string>> = useParams();
 
   const dispatch = useAppDispatch();
@@ -46,6 +53,12 @@ function Car() {
   );
   const [isLoadingThenImage, setIsLoadingThenImage] = useState<boolean>(false);
   const [isSavingNewItem, setIsSavingNewItem] = useState<boolean>(false);
+  const [isDeletingBeforeImage, setIsDeletingBeforeImage] = useState<boolean>(
+    false
+  );
+  const [isDeletingThenImage, setIsDeletingThenImage] = useState<boolean>(
+    false
+  );
 
   const [selectedService, setSelectedService] = useState<string>("");
   const [price, setPrice] = useState<string>("");
@@ -71,7 +84,13 @@ function Car() {
     }
   };
 
-  const handleSelectBeforeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectBeforeImage = ({
+    e,
+    item,
+  }: {
+    e: React.ChangeEvent<HTMLInputElement>;
+    item?: Item_Type;
+  }) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -85,6 +104,25 @@ function Car() {
         console.log("Uploaded a file!");
         getDownloadURL(storageRef).then((url) => {
           setBeforeImage(url);
+
+          if (!item) return;
+          if (item) {
+            updateBeforeImage({
+              beforeImage: url,
+              itemId: item.id,
+              carName: id!,
+              serviceName: selectedService,
+            }).then(() => {
+              dispatch(
+                carActions.updateBeforeImage({
+                  beforeImage: url,
+                  itemId: item.id,
+                  carName: id!,
+                  serviceName: selectedService,
+                })
+              );
+            });
+          }
         });
       })
       .finally(() => {
@@ -92,7 +130,13 @@ function Car() {
       });
   };
 
-  const handleSelectThenImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectThenImage = ({
+    e,
+    item,
+  }: {
+    e: React.ChangeEvent<HTMLInputElement>;
+    item?: Item_Type;
+  }) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -106,6 +150,24 @@ function Car() {
         console.log("Uploaded a file!");
         getDownloadURL(storageRef).then((url) => {
           setThenImage(url);
+          if (!item) return;
+          if (item) {
+            updateThenImage({
+              thenImage: url,
+              itemId: item.id,
+              carName: id!,
+              serviceName: selectedService,
+            }).then(() => {
+              dispatch(
+                carActions.updateThenImage({
+                  thenImage: url,
+                  itemId: item.id,
+                  carName: id!,
+                  serviceName: selectedService,
+                })
+              );
+            });
+          }
         });
       })
       .finally(() => {
@@ -157,6 +219,54 @@ function Car() {
         setPrice("");
         setDescription("");
         setIsAddCarServiceMoadlOpen(false);
+      });
+  };
+
+  const handleDeleteBeforeImage = (item: Item_Type) => {
+    setIsDeletingBeforeImage(true);
+
+    updateBeforeImage({
+      beforeImage: "",
+      itemId: item.id,
+      carName: id!,
+      serviceName: selectedService,
+    })
+      .then(() => {
+        dispatch(
+          carActions.updateBeforeImage({
+            beforeImage: "",
+            itemId: item.id,
+            carName: id!,
+            serviceName: selectedService,
+          })
+        );
+      })
+      .finally(() => {
+        setIsDeletingBeforeImage(false);
+      });
+  };
+
+  const handleDeleteThenImage = (item: Item_Type) => {
+    setIsDeletingThenImage(true);
+
+    updateThenImage({
+      thenImage: "",
+      itemId: item.id,
+      carName: id!,
+      serviceName: selectedService,
+    })
+      .then(() => {
+        dispatch(
+          carActions.updateThenImage({
+            thenImage: "",
+            itemId: item.id,
+            carName: id!,
+            serviceName: selectedService,
+          })
+        );
+      })
+      .finally(() => {
+        setIsDeletingThenImage(false);
       });
   };
 
@@ -218,7 +328,12 @@ function Car() {
                       <section className={styles.imageSection}>
                         {item.before.length === 0 ? (
                           <React.Fragment>
-                            <button className={modalstyles.btn}>
+                            <button
+                              className={modalstyles.btn}
+                              onClick={() =>
+                                updateBeforeImageRef.current?.click()
+                              }
+                            >
                               {isLoadingBeforeImage ? (
                                 <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                               ) : (
@@ -228,8 +343,10 @@ function Car() {
                             <input
                               type="file"
                               className="hidden"
-                              ref={beforeImageRef}
-                              onChange={handleSelectBeforeImage}
+                              ref={updateBeforeImageRef}
+                              onChange={(e) =>
+                                handleSelectBeforeImage({ e, item })
+                              }
                               accept="image/*"
                             />
                           </React.Fragment>
@@ -243,29 +360,40 @@ function Car() {
                             <Tooltip title="O'chirish">
                               <button
                                 className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
-                                onClick={() => {}}
+                                onClick={() => handleDeleteBeforeImage(item)}
                               >
-                                <DeleteIcon />
+                                {isDeletingBeforeImage ? (
+                                  <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                ) : (
+                                  <DeleteIcon />
+                                )}
                               </button>
                             </Tooltip>
                           </picture>
                         )}
                       </section>
                       <section className={styles.imageSection}>
-                        {item.before.length === 0 ? (
+                        {item.then.length === 0 ? (
                           <React.Fragment>
-                            <button className={modalstyles.btn}>
-                              {isLoadingBeforeImage ? (
+                            <button
+                              className={modalstyles.btn}
+                              onClick={() =>
+                                updateThenImageRef.current?.click()
+                              }
+                            >
+                              {isLoadingThenImage ? (
                                 <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                               ) : (
-                                "Dastlabki"
+                                "Natija"
                               )}
                             </button>
                             <input
                               type="file"
                               className="hidden"
-                              ref={thenImageRef}
-                              onChange={handleSelectThenImage}
+                              ref={updateThenImageRef}
+                              onChange={(e) =>
+                                handleSelectThenImage({ e, item })
+                              }
                               accept="image/*"
                             />
                           </React.Fragment>
@@ -279,9 +407,13 @@ function Car() {
                             <Tooltip title="O'chirish">
                               <button
                                 className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
-                                onClick={() => {}}
+                                onClick={() => handleDeleteThenImage(item)}
                               >
-                                <DeleteIcon />
+                                {isDeletingThenImage ? (
+                                  <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                ) : (
+                                  <DeleteIcon />
+                                )}
                               </button>
                             </Tooltip>
                           </picture>
@@ -326,7 +458,7 @@ function Car() {
                 className="hidden"
                 ref={beforeImageRef}
                 accept="image/*"
-                onChange={handleSelectBeforeImage}
+                onChange={(e) => handleSelectBeforeImage({ e })}
               />
               <button
                 className={modalstyles.btn}
@@ -348,7 +480,7 @@ function Car() {
                 className="hidden"
                 ref={thenImageRef}
                 accept="image/*"
-                onChange={handleSelectThenImage}
+                onChange={(e) => handleSelectThenImage({ e })}
               />
               <button
                 className={modalstyles.btn}
