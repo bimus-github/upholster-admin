@@ -3,17 +3,21 @@ import { Params, useNavigate, useParams } from "react-router-dom";
 import { typeText } from "../../unils/functions/typeText";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Tooltip } from "@mui/material";
 import Dialog from "../Dialog";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import Modal from "../Modal";
 import Input from "../Input";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   addServiceToCar,
+  deleteItem,
   updateBeforeImage,
+  updateDescription,
+  updatePrice,
   updateThenImage,
 } from "../../firebase/functions/car";
 import { carActions } from "../../store/features/carSlices";
@@ -44,27 +48,36 @@ function Car() {
   const [isDialogDeleteImage, setIsDialogDeleteImage] = useState<boolean>(
     false
   );
+  const [isDialogeDeleteItem, setIsDialogeDeleteItem] = useState<boolean>(
+    false
+  );
   const [isDialogEditPrice, setIsDialogEditPrice] = useState<boolean>(false);
   const [isAddCarServiceMoadlOpen, setIsAddCarServiceMoadlOpen] = useState<
     boolean
   >(false);
+  const [isEditDescriptionModal, setIsEditDescriptionModal] = useState<boolean>(
+    false
+  );
+  const [isEditPriceModal, setIsEditPriceModal] = useState<boolean>(false);
   const [isLoadingBeforeImage, setIsLoadingBeforeImage] = useState<boolean>(
     false
   );
   const [isLoadingThenImage, setIsLoadingThenImage] = useState<boolean>(false);
-  const [isSavingNewItem, setIsSavingNewItem] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isDeletingBeforeImage, setIsDeletingBeforeImage] = useState<boolean>(
     false
   );
   const [isDeletingThenImage, setIsDeletingThenImage] = useState<boolean>(
     false
   );
+  const [isDeletingItem, setIsDeletingItem] = useState<boolean>(false);
 
   const [selectedService, setSelectedService] = useState<string>("");
   const [price, setPrice] = useState<string>("");
   const [beforeImage, setBeforeImage] = useState<string>("");
   const [thenImage, setThenImage] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [item, setItem] = useState<Item_Type>({} as Item_Type);
 
   const isServiceHave = services.find((item) => item.name === selectedService);
 
@@ -75,6 +88,7 @@ function Car() {
   useEffect(() => {
     typeText(carNameRef);
   }, []);
+
   const handleBackgroundClick = (
     event: React.MouseEvent<HTMLDialogElement>
   ) => {
@@ -184,7 +198,7 @@ function Car() {
     )
       return;
 
-    setIsSavingNewItem(true);
+    setIsSaving(true);
 
     const newService = {
       price: price,
@@ -213,7 +227,7 @@ function Car() {
         );
       })
       .finally(() => {
-        setIsSavingNewItem(false);
+        setIsSaving(false);
         setBeforeImage("");
         setThenImage("");
         setPrice("");
@@ -267,6 +281,77 @@ function Car() {
       })
       .finally(() => {
         setIsDeletingThenImage(false);
+      });
+  };
+
+  const handleEditDescription = () => {
+    if (!description.length) return;
+    setIsSaving(true);
+
+    updateDescription({
+      description: description,
+      itemId: item!.id,
+      carName: id!,
+      serviceName: selectedService,
+    })
+      .then(() => {
+        dispatch(
+          carActions.updateDescription({
+            description: description,
+            itemId: item!.id,
+            carName: id!,
+            serviceName: selectedService,
+          })
+        );
+      })
+      .finally(() => {
+        setIsSaving(false);
+        setIsEditDescriptionModal(false);
+      });
+  };
+
+  const handleEditPrice = () => {
+    if (!price.length) return;
+    setIsSaving(true);
+
+    updatePrice({
+      price: price,
+      itemId: item!.id,
+      carName: id!,
+      serviceName: selectedService,
+    }).then(() => {
+      dispatch(
+        carActions.updatePrice({
+          price: price,
+          itemId: item!.id,
+          carName: id!,
+          serviceName: selectedService,
+        })
+      );
+    });
+  };
+
+  const handleDeleteItem = () => {
+    if (!item) return;
+    setIsDeletingItem(true);
+    setIsDialogeDeleteItem(false);
+
+    deleteItem({
+      itemId: item.id,
+      carName: id!,
+      serviceName: selectedService,
+    })
+      .then(() => {
+        dispatch(
+          carActions.deleteItem({
+            itemId: item.id,
+            carName: id!,
+            serviceName: selectedService,
+          })
+        );
+      })
+      .finally(() => {
+        setIsDeletingItem(false);
       });
   };
 
@@ -324,108 +409,159 @@ function Car() {
                 )}
                 {carService?.items.map((item, index) => (
                   <li className={styles.li} key={index}>
-                    <span className={styles.view}>
-                      <section className={styles.imageSection}>
-                        {item.before.length === 0 ? (
-                          <React.Fragment>
-                            <button
-                              className={modalstyles.btn}
-                              onClick={() =>
-                                updateBeforeImageRef.current?.click()
-                              }
+                    {isDeletingItem ? (
+                      <div className="animate-spin inline-block w-[100px] h-[100px] border-t-2 border-l-2 border-black rounded-full" />
+                    ) : (
+                      <React.Fragment>
+                        <span className={styles.view}>
+                          <section className={styles.imageSection}>
+                            {item.before.length === 0 ? (
+                              <React.Fragment>
+                                <button
+                                  className={modalstyles.btn}
+                                  onClick={() =>
+                                    updateBeforeImageRef.current?.click()
+                                  }
+                                >
+                                  {isLoadingBeforeImage ? (
+                                    <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                  ) : (
+                                    "Dastlabki"
+                                  )}
+                                </button>
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  ref={updateBeforeImageRef}
+                                  onChange={(e) =>
+                                    handleSelectBeforeImage({ e, item })
+                                  }
+                                  accept="image/*"
+                                />
+                              </React.Fragment>
+                            ) : (
+                              <picture className="relative">
+                                <img
+                                  src={item.before}
+                                  alt=""
+                                  className="h-[200px] md:h-[100px] rounded-md"
+                                />
+                                <Tooltip title="O'chirish">
+                                  <button
+                                    className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
+                                    onClick={() =>
+                                      handleDeleteBeforeImage(item)
+                                    }
+                                  >
+                                    {isDeletingBeforeImage ? (
+                                      <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                    ) : (
+                                      <DeleteIcon />
+                                    )}
+                                  </button>
+                                </Tooltip>
+                              </picture>
+                            )}
+                          </section>
+                          <section className={styles.imageSection}>
+                            {item.then.length === 0 ? (
+                              <React.Fragment>
+                                <button
+                                  className={modalstyles.btn}
+                                  onClick={() =>
+                                    updateThenImageRef.current?.click()
+                                  }
+                                >
+                                  {isLoadingThenImage ? (
+                                    <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                  ) : (
+                                    "Natija"
+                                  )}
+                                </button>
+                                <input
+                                  type="file"
+                                  className="hidden"
+                                  ref={updateThenImageRef}
+                                  onChange={(e) =>
+                                    handleSelectThenImage({ e, item })
+                                  }
+                                  accept="image/*"
+                                />
+                              </React.Fragment>
+                            ) : (
+                              <picture className="relative">
+                                <img
+                                  src={item.then}
+                                  alt=""
+                                  className="h-[200px] md:h-[100px] rounded-md"
+                                />
+                                <Tooltip title="O'chirish">
+                                  <button
+                                    className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
+                                    onClick={() => handleDeleteThenImage(item)}
+                                  >
+                                    {isDeletingThenImage ? (
+                                      <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
+                                    ) : (
+                                      <DeleteIcon />
+                                    )}
+                                  </button>
+                                </Tooltip>
+                              </picture>
+                            )}
+                          </section>
+                        </span>
+                        <article className={styles.article}>
+                          <p ref={textRef} className="text-justify w-full">
+                            {item.description}{" "}
+                            <span
+                              className={`${styles.iconBtn} text-sky-500 cursor-pointer`}
                             >
-                              {isLoadingBeforeImage ? (
-                                <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
-                              ) : (
-                                "Dastlabki"
-                              )}
-                            </button>
-                            <input
-                              type="file"
-                              className="hidden"
-                              ref={updateBeforeImageRef}
-                              onChange={(e) =>
-                                handleSelectBeforeImage({ e, item })
-                              }
-                              accept="image/*"
-                            />
-                          </React.Fragment>
-                        ) : (
-                          <picture className="relative">
-                            <img
-                              src={item.before}
-                              alt=""
-                              className="h-[200px] rounded-md"
-                            />
-                            <Tooltip title="O'chirish">
-                              <button
-                                className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
-                                onClick={() => handleDeleteBeforeImage(item)}
-                              >
-                                {isDeletingBeforeImage ? (
-                                  <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
-                                ) : (
-                                  <DeleteIcon />
-                                )}
-                              </button>
-                            </Tooltip>
-                          </picture>
-                        )}
-                      </section>
-                      <section className={styles.imageSection}>
-                        {item.then.length === 0 ? (
-                          <React.Fragment>
-                            <button
-                              className={modalstyles.btn}
-                              onClick={() =>
-                                updateThenImageRef.current?.click()
-                              }
+                              <Tooltip title="Yangilash">
+                                <EditIcon
+                                  onClick={() => {
+                                    setIsEditDescriptionModal(true);
+                                    setItem(item);
+                                    setDescription(item.description);
+                                  }}
+                                />
+                              </Tooltip>
+                            </span>
+                          </p>
+                          <span className="flex gap-2">
+                            <button className={styles.btn}>{item.price}</button>
+                            <span
+                              className={`${styles.iconBtn} text-sky-500 cursor-pointer`}
                             >
-                              {isLoadingThenImage ? (
-                                <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
-                              ) : (
-                                "Natija"
-                              )}
-                            </button>
-                            <input
-                              type="file"
-                              className="hidden"
-                              ref={updateThenImageRef}
-                              onChange={(e) =>
-                                handleSelectThenImage({ e, item })
-                              }
-                              accept="image/*"
-                            />
-                          </React.Fragment>
-                        ) : (
-                          <picture className="relative">
-                            <img
-                              src={item.then}
-                              alt=""
-                              className="h-[200px] rounded-md"
-                            />
+                              <Tooltip title="O'chirish">
+                                <EditIcon
+                                  onClick={() => {
+                                    setIsEditPriceModal(true);
+                                    setPrice(item.price);
+                                    setItem(item);
+                                  }}
+                                />
+                              </Tooltip>
+                            </span>
                             <Tooltip title="O'chirish">
-                              <button
-                                className={`${styles.iconBtn} text-red-500 absolute bottom-2`}
-                                onClick={() => handleDeleteThenImage(item)}
+                              <span
+                                className={`${styles.iconBtn} text-red-500 cursor-pointer`}
+                                onClick={() => {
+                                  setIsDialogeDeleteItem(true);
+                                  setItem(item);
+                                }}
                               >
                                 {isDeletingThenImage ? (
                                   <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                                 ) : (
                                   <DeleteIcon />
                                 )}
-                              </button>
+                              </span>
                             </Tooltip>
-                          </picture>
-                        )}
-                      </section>
-                    </span>
-                    <article className={styles.article}>
-                      <p ref={textRef} className="text-justify w-full">
-                        {item.description}
-                      </p>
-                      <button className={styles.btn}>{item.price}</button>
-                    </article>
+                          </span>
+                        </article>
+                      </React.Fragment>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -447,7 +583,7 @@ function Car() {
           setBeforeImage("");
           setThenImage("");
         }}
-        isSaving={isSavingNewItem}
+        isSaving={isSaving}
         handleYes={handleSaveNewItem}
       >
         <div className={modalstyles.main}>
@@ -516,7 +652,49 @@ function Car() {
         </div>
       </Modal>
 
+      <Modal
+        handleYes={handleEditDescription}
+        handeClear={() => setDescription("")}
+        isOpenModal={isEditDescriptionModal}
+        setIsOpenModal={setIsEditDescriptionModal}
+        isSaving={isSaving}
+      >
+        <Input
+          placeholder="Shu servis bo'yicha ma'lumot"
+          value={description}
+          setValue={setDescription}
+          type="text"
+          title="Ma'lumot"
+          isTextArea
+          height="h-[150px]"
+        />
+      </Modal>
+
+      <Modal
+        handleYes={handleEditPrice}
+        handeClear={() => setPrice("")}
+        isOpenModal={isEditPriceModal}
+        setIsOpenModal={setIsEditPriceModal}
+        isSaving={isSaving}
+      >
+        <Input
+          placeholder="m.u: 200$"
+          value={price}
+          setValue={setPrice}
+          type="text"
+          title="Narx"
+        />
+      </Modal>
+
       {/* Dialogs */}
+      <Dialog
+        isOpenDialog={isDialogeDeleteItem}
+        setIsOpenDialog={setIsDialogeDeleteItem}
+        handleYes={handleDeleteItem}
+      >
+        Rostanham o'chirmoqchimisiz?
+      </Dialog>
+
       <Dialog
         isOpenDialog={isDialogAddImageOpen}
         setIsOpenDialog={setIsDialogAddImageOpen}
@@ -574,12 +752,13 @@ const styles = {
   iconBtn: "hover:bg-slate-100 p-2 rounded-full",
 
   ul: "flex flex-col gap-2 h-[350px] overflow-y-auto",
-  li: "flex md:flex-col gap-3 bg-slate-100 p-2 rounded-md drop-shadow-md ",
+  li:
+    "flex md:flex-col gap-3 bg-slate-100 p-2 rounded-md drop-shadow-md justify-center items-center",
   article: "w-1/2 md:w-full flex flex-col justify-between gap-2",
-  btn: "w-[300px] md:w-full mx-auto rounded-md bg-sky-400 hover:bg-sky-300 p-2",
+  btn: "w-[200px] md:w-full mx-auto rounded-md bg-sky-400 hover:bg-sky-300 p-2",
 
   view: "w-1/2 flex gap-2 overflow-y-auto",
-  imageSection: "w-1/2 flex justify-center items-center",
+  imageSection: "w-1/2 md:w-full flex justify-center items-center",
 };
 
 const modalstyles = {
