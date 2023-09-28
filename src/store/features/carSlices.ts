@@ -10,6 +10,16 @@ export const carSlices = createSlice({
     addCar: (state, action: { payload: Car_Type }) => {
       state.push(action.payload);
     },
+    updateCarName: (
+      state,
+      action: { payload: { name: string; newName: string } }
+    ) => {
+      const index = state.findIndex(
+        (item) => item.name === action.payload.name
+      );
+
+      state[index].newName = action.payload.newName;
+    },
     setCars: (_, action: { payload: Car_Type[] }) => {
       return action.payload;
     },
