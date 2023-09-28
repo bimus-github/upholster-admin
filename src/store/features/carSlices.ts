@@ -254,6 +254,38 @@ export const carSlices = createSlice({
         return state;
       }
     },
+    deleteItem(
+      state,
+      action: {
+        payload: {
+          carName: string;
+          serviceName: string;
+          itemId: string;
+        };
+      }
+    ) {
+      // getting index of car
+      const index = state.findIndex(
+        (item) => item.name === action.payload.carName
+      );
+
+      const services = state[index].services;
+
+      // find the service in the car
+
+      const updatedServices = services.map(({ name, items }) => {
+        if (name === action.payload.serviceName) {
+          return {
+            name,
+            items: items.filter((item) => item.id !== action.payload.itemId),
+          } as Car_Service_Type;
+        } else {
+          return { name, items };
+        }
+      });
+
+      state[index].services = updatedServices;
+    },
   },
 });
 
