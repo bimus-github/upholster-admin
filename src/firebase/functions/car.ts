@@ -31,6 +31,18 @@ export const getCars = async () => {
   }
 };
 
+export const updateCarName = async (name: string, newName: string) => {
+  try {
+    const docRef = doc(db, collection_name, name);
+    // our car name and id are the same, so we should update both id and name
+    await updateDoc(docRef, {
+      newName: newName,
+    });
+  } catch (error) {
+    console.log("Error while updating car name: ", error);
+  }
+};
+
 export const addCar = async (car: Car_Type) => {
   try {
     const docRef = doc(db, collection_name, car.name);
