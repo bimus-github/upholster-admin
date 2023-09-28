@@ -9,7 +9,7 @@ import Modal from "../Modal";
 import Input from "../Input";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase";
-import { addCar, deleteCar } from "../../firebase/functions/car";
+import { addCar, deleteCar, updateCarName } from "../../firebase/functions/car";
 import { carActions } from "../../store/features/carSlices";
 import Dialog from "../Dialog";
 
@@ -20,12 +20,19 @@ function Cars() {
   const navigate = useNavigate();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [isEditNameModalOpen, setIsEditNameModalOpen] = useState<boolean>(
+    false
+  );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState<boolean>(
+    false
+  );
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isUploadingImage, setIsUploadingImage] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const [carName, setCarName] = useState<string>("");
+  const [newCarName, setNewCarName] = useState<string>("");
   const [carImage, setCarImage] = useState<string>("");
   const [deletedCar, setDeletedCar] = useState<string>("");
 
@@ -87,6 +94,27 @@ function Cars() {
       });
   };
 
+  const handleUpdateCarName = () => {
+    if (newCarName.length === 0) return;
+    setIsSaving(true);
+
+    if (newCarName === carName) return;
+
+    updateCarName(carName, newCarName)
+      .then(() => {
+        dispatch(
+          carActions.updateCarName({ name: carName, newName: newCarName })
+        );
+      })
+      .finally(() => {
+        setIsSaving(false);
+        setNewCarName("");
+        setCarName("");
+        setIsEditNameModalOpen(false);
+        setIsEditNameDialogOpen(false);
+      });
+  };
+
   return (
     <fieldset className={styles.fieldset}>
       <legend className={styles.legend}>
@@ -113,13 +141,20 @@ function Cars() {
                 className="text-sky-500 cursor-pointer"
                 onClick={() => navigate(`/designs/${car.name}`)}
               >
-                {car.name}
+                {car.newName ? car.newName : car.name}
               </strong>
             </div>
 
             <div className={styles.div}>
               <Tooltip title="O'zgartirish">
-                <button className={`${styles.iconBtn}  ${styles.editIcon}`}>
+                <button
+                  className={`${styles.iconBtn}  ${styles.editIcon}`}
+                  onClick={() => {
+                    setIsEditNameDialogOpen(true);
+                    setCarName(car.name);
+                    setNewCarName(car.newName ? car.newName : car.name);
+                  }}
+                >
                   <EditIcon />
                 </button>
               </Tooltip>
@@ -143,6 +178,7 @@ function Cars() {
         ))}
       </ul>
 
+      {/* Dialogs */}
       <Dialog
         isOpenDialog={isDeleteDialogOpen}
         setIsOpenDialog={setIsDeleteDialogOpen}
@@ -151,6 +187,15 @@ function Cars() {
         Rostanham o'chitmoqchi missiz?
       </Dialog>
 
+      <Dialog
+        handleYes={() => setIsEditNameModalOpen(true)}
+        isOpenDialog={isEditNameDialogOpen}
+        setIsOpenDialog={setIsEditNameDialogOpen}
+      >
+        Rostanham nomni o'zgartirish holaysizmi?
+      </Dialog>
+
+      {/* Modals */}
       <Modal
         isSaving={isSaving}
         isOpenModal={isAddModalOpen}
@@ -197,6 +242,22 @@ function Cars() {
             )}
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        handleYes={handleUpdateCarName}
+        handeClear={() => setCarName("")}
+        isOpenModal={isEditNameModalOpen}
+        setIsOpenModal={setIsEditNameModalOpen}
+        isSaving={isSaving}
+      >
+        <Input
+          setValue={setNewCarName}
+          placeholder="m.u: Damas"
+          value={newCarName}
+          type="text"
+          title="Mashina nomi"
+        />
       </Modal>
     </fieldset>
   );
