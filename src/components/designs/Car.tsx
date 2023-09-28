@@ -257,6 +257,7 @@ function Car() {
       })
       .finally(() => {
         setIsDeletingBeforeImage(false);
+        setBeforeImage("");
       });
   };
 
@@ -281,6 +282,7 @@ function Car() {
       })
       .finally(() => {
         setIsDeletingThenImage(false);
+        setThenImage("");
       });
   };
 
@@ -307,6 +309,7 @@ function Car() {
       .finally(() => {
         setIsSaving(false);
         setIsEditDescriptionModal(false);
+        setDescription("");
       });
   };
 
@@ -319,16 +322,22 @@ function Car() {
       itemId: item!.id,
       carName: id!,
       serviceName: selectedService,
-    }).then(() => {
-      dispatch(
-        carActions.updatePrice({
-          price: price,
-          itemId: item!.id,
-          carName: id!,
-          serviceName: selectedService,
-        })
-      );
-    });
+    })
+      .then(() => {
+        dispatch(
+          carActions.updatePrice({
+            price: price,
+            itemId: item!.id,
+            carName: id!,
+            serviceName: selectedService,
+          })
+        );
+      })
+      .finally(() => {
+        setIsSaving(false);
+        setIsEditPriceModal(false);
+        setPrice("");
+      });
   };
 
   const handleDeleteItem = () => {
@@ -352,6 +361,8 @@ function Car() {
       })
       .finally(() => {
         setIsDeletingItem(false);
+        setIsDialogeDeleteItem(false);
+        setItem({} as Item_Type);
       });
   };
 
