@@ -20,6 +20,7 @@ export type Service_Type = {
 export type Car_Type = {
   name: string;
   image: string;
+  newName?: string;
   services: Car_Service_Type[];
 };
 
