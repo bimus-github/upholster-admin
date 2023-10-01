@@ -103,7 +103,11 @@ function Navbar() {
         </ul>
       </aside>
 
-      <main id="main" className="pl-[60px] pt-[70px] z-0">
+      <main
+        onClick={() => setIsClosedSideBar(true)}
+        id="main"
+        className="pl-[60px] pt-[70px] z-0"
+      >
         <Outlet />
       </main>
     </nav>
@@ -118,7 +122,7 @@ const styles = {
     "fixed top-0 left-0 right-0 z-10 bg-white drop-shadow-md h-[70px] p-5 flex items-center",
   aside:
     "fixed top-0 left-0 right-0 z-[5] bottom-0 bg-white drop-shadow-md pt-[100px] flex items-center flex-col ease-linear transition-all duration-300",
-  ul: "flex flex-col gap-5 py-5 w-full",
+  ul: "flex flex-col gap-5 py-5 w-[80%]",
   link:
     "relative p-2 w-full text-center hover:bg-opacity-90 font-semibold hover:bg-slate-100 flex justify-center gap-4",
   p: "ease-linear transition-opacity duration-300",

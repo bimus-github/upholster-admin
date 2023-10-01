@@ -60,7 +60,7 @@ function GarageImageSection() {
       <legend className={styles.legend}>
         <cite className={styles.cite}> Garaj Ko'rinishi</cite>
         <button className={styles.iconBtn} onClick={() => setIsOpenModal(true)}>
-          <EditIcon color="primary" />
+          <EditIcon color="primary" fontSize="small" />
         </button>
       </legend>
 

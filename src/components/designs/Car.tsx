@@ -385,18 +385,21 @@ function Car() {
           <legend className={styles.legend}>
             <cite className={styles.cite}>Xizmat turi</cite>
           </legend>
-          <input
-            className={styles.input}
-            type="text"
-            list="xizmat_turlari"
+
+          <select
+            name="xizmat_turlari"
+            id="xizmat_turlari"
             value={selectedService}
             onChange={(e) => setSelectedService(e.target.value)}
-          />
-          <datalist id="xizmat_turlari">
+            className={styles.input}
+          >
+            <option value="">None</option>
             {services.map((item) => (
-              <option key={item.name} value={item.name} />
+              <option key={item.name} value={item.name}>
+                {item.name}
+              </option>
             ))}
-          </datalist>
+          </select>
         </fieldset>
 
         <main className={styles.services}>
@@ -467,7 +470,7 @@ function Car() {
                                     {isDeletingBeforeImage ? (
                                       <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                                     ) : (
-                                      <DeleteIcon />
+                                      <DeleteIcon fontSize="small" />
                                     )}
                                   </button>
                                 </Tooltip>
@@ -514,7 +517,7 @@ function Car() {
                                     {isDeletingThenImage ? (
                                       <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                                     ) : (
-                                      <DeleteIcon />
+                                      <DeleteIcon fontSize="small" />
                                     )}
                                   </button>
                                 </Tooltip>
@@ -535,6 +538,7 @@ function Car() {
                                     setItem(item);
                                     setDescription(item.description);
                                   }}
+                                  fontSize="small"
                                 />
                               </Tooltip>
                             </span>
@@ -551,6 +555,7 @@ function Car() {
                                     setPrice(item.price);
                                     setItem(item);
                                   }}
+                                  fontSize="small"
                                 />
                               </Tooltip>
                             </span>
@@ -565,7 +570,7 @@ function Car() {
                                 {isDeletingThenImage ? (
                                   <div className="animate-spin inline-block w-4 h-4 border-t-2 border-l-2 border-black rounded-full" />
                                 ) : (
-                                  <DeleteIcon />
+                                  <DeleteIcon fontSize="small" />
                                 )}
                               </span>
                             </Tooltip>

@@ -154,7 +154,7 @@ function ServicesSection() {
                         className={styles.iconBtn}
                         onClick={() => setIsOpenChangeDialog(true)}
                       >
-                        <EditIcon color="primary" fontSize="small" />
+                        <EditIcon fontSize="small" color="primary" />
                       </button>
                     </Tooltip>
                   </sup>

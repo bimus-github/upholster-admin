@@ -155,7 +155,7 @@ function Cars() {
                     setNewCarName(car.newName ? car.newName : car.name);
                   }}
                 >
-                  <EditIcon />
+                  <EditIcon fontSize="small" />
                 </button>
               </Tooltip>
               {isDeleting && car.name === deletedCar ? (
@@ -169,7 +169,7 @@ function Cars() {
                       setDeletedCar(car.name);
                     }}
                   >
-                    <DeleteIcon />
+                    <DeleteIcon fontSize="small" />
                   </button>
                 </Tooltip>
               )}

@@ -95,7 +95,7 @@ function LocationInfoSection() {
                       }}
                       className={`${styles.iconBtn} text-red-500`}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </button>
                   </Tooltip>
                 )}
